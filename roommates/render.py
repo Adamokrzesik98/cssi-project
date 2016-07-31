@@ -1,5 +1,6 @@
 # Outside Libraries
 import jinja2
+from google.appengine.api import users
 
 # Initialize Jinja Environment
 env = jinja2.Environment(loader= jinja2.FileSystemLoader('templates'))
@@ -8,8 +9,10 @@ env = jinja2.Environment(loader= jinja2.FileSystemLoader('templates'))
 # Takes a html template, page title, and data list to render page
 # Must pass self in as an argument
 def render_page_with_data(self, page_html, page_title, data):
+    # Create logout url
+    logout_url = users.create_logout_url('/')
     # Render header
-    header_data = {'title': page_title}
+    header_data = {'title': page_title, 'url': logout_url}
     header = env.get_template('header.html')
     self.response.write(header.render(header_data))
     # Render page contents
@@ -23,8 +26,10 @@ def render_page_with_data(self, page_html, page_title, data):
 # Takes a html template and page title to render page
 # Must pass self in as an argument
 def render_page(self, page_html, page_title):
+    # Create logout url
+    logout_url = users.create_logout_url('/')
     # Render header
-    header_data = {'title': page_title}
+    header_data = {'title': page_title, 'url': logout_url}
     header = env.get_template('header.html')
     self.response.write(header.render(header_data))
     # Render page contents

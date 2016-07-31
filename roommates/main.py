@@ -55,11 +55,11 @@ class MainHandler(webapp2.RequestHandler):
             # Otherwise, prompt user to create account
             else:
                 #redirect to create account page
-                helpers.redirect(self, '/create_account')
+                helpers.redirect(self, '/create_account', 0)
          
         # If there is no user, prompt client to login 
         else:
-            login.render_login_page(self)
+            login.render_login_page(self, 0)
 
 
 class CreateAccountHandler(webapp2.RequestHandler):
@@ -77,7 +77,7 @@ class CreateAccountHandler(webapp2.RequestHandler):
         person.put()
 
         #redirect to join or create a home page
-        helpers.redirect(self, '/create_home')
+        helpers.redirect(self, '/create_home', 500)
 
 
 class CreateHomeHandler(webapp2.RequestHandler):
@@ -91,10 +91,10 @@ class CreateHomeHandler(webapp2.RequestHandler):
                 # Display create a Home page
                 render.render_page(self, 'createHome.html', 'Create a Home')
             else:
-               helpers.redirect(self, '/') 
+               helpers.redirect(self, '/',0) 
         # If there is no user, prompt client to login 
         else:
-            helpers.redirect(self, '/')
+            helpers.redirect(self, '/',0)
 
     def post(self):
         #retrieve data from form
@@ -107,7 +107,7 @@ class CreateHomeHandler(webapp2.RequestHandler):
         new_home.put()
 
         #redirect to join or create a home page
-        helpers.redirect(self, '/calendar')
+        helpers.redirect(self, '/calendar',0)
 
 class JoinHomeHandler(webapp2.RequestHandler):
     def get(self):
@@ -120,10 +120,10 @@ class JoinHomeHandler(webapp2.RequestHandler):
                 # Display create a Home page
                 render.render_page(self, 'joinHome.html', 'Join a Home')
             else:
-               helpers.redirect(self, '/') 
+               helpers.redirect(self, '/',0) 
         # If there is no user, prompt client to login 
         else:
-            helpers.redirect(self, '/')
+            helpers.redirect(self, '/',0)
 
     def post(self):
         user = users.get_current_user()
@@ -160,10 +160,10 @@ class CalendarHandler(webapp2.RequestHandler):
                 # Display create a Home page
                 render.render(self, 'createHome.html', 'Create a Home')
             else:
-               helpers.redirect(self, '/') 
+               helpers.redirect(self, '/',0) 
         # If there is no user, prompt client to login 
         else:
-            helpers.redirect(self, '/')
+            helpers.redirect(self, '/',0)
 
 
 
@@ -181,7 +181,7 @@ class TemplateHandler(webapp2.RequestHandler):
 
         # If there is no user, prompt client to login 
         else:
-            helpers.redirect(self, '/')
+            helpers.redirect(self, '/',0)
 
 class DeveloperHandler(webapp2.RequestHandler):
     def get(self):
@@ -205,9 +205,3 @@ app = webapp2.WSGIApplication([
     ('/join_home', JoinHomeHandler),
     ('/developer', DeveloperHandler)
 ], debug=True)
-
-
-
-#            logout_url = users.create_logout_url('/')
-#            logout = env.get_template('logout.html')
-#            data = {'url': logout_url}
