@@ -1,3 +1,19 @@
+#dash_title{
+	position: fixed;
+	color: #CAE9FF;
+	border-radius: 50px;
+	top: 13%;
+	left: 25%;
+	padding: 5px;
+	text-align: center;
+	width: 50%;
+	margin: auto;
+	background-color: #1B4965;
+}
+
+
+
+
 .centered_title{
 	text-align: center;
 }
@@ -14,4 +30,10 @@ table, th, td {
 }
 #warning {
 	color: red;
+}
+
+
+
+body {
+	background-color: #BEE9E8
 }
