@@ -1,26 +1,28 @@
+#empty_top{
+	width: 100%;
+	height: 50%;
+	float: left;
+}
 #dash_title{
-	position: fixed;
 	color: #CAE9FF;
 	border-radius: 50px;
-	top: 13%;
-	left: 25%;
 	padding: 5px;
 	text-align: center;
 	width: 50%;
 	margin: auto;
+	margin-bottom: 3%;
 	background-color: #1B4965;
+	float: middle;
 }
 #main_left{
-	position: fixed;
-	top: 30%;
+	float: left;
 	width: 40%;
-	left: 5%
+	margin-left: 5%
 }
 #main_right{
-	position: fixed;
-	top: 30%;
+	float: right;
 	width: 40%;
-	right: 5%;
+	margin-right: 5%;
 }
 #do_not_disturb_frame{
 	float: left;
@@ -47,7 +49,7 @@
 	border-radius: 25px;
 	padding: 5px;
 	text-align: center;
-	width: 22.75%;
+	width: 22.7%;
 	margin: auto;
 	background-color: #4A8FE7;
 	margin-bottom: 5%;
@@ -79,6 +81,33 @@
 	background-color: #4A8FE7;
 	margin-bottom: 5%;
 }
+#sticky_frame{
+	float: left;
+	width: 100%;
+}
+#sticky_title{
+	color: #CAE9FF;
+	border-radius: 50px;
+	padding: 5px;
+	text-align: center;
+	width: 100%;
+	margin: auto;
+	background-color: #1B4965;
+	margin-bottom: 5%;
+}
+.sticky_item{
+	display: inline-block;
+	color: #CAE9FF;
+	font-size: 5%
+	border 2px;
+	border-radius: 25px;
+	padding: 5px;
+	text-align: center;
+	width: 100%;
+	margin: auto;
+	background-color: #4A8FE7;
+	margin-bottom: 5%;
+}
 
 form input[type=submit] {
 	position: relative;
@@ -97,8 +126,19 @@ form input[type=submit]:hover{
 
 
 .centered_title{
-	text-align: center;
+
+	margin: auto;
 	color: #1B4965;
+	top: 40px;
+	left: 30px;
+	padding: 5px;
+	padding-right:70px;
+	padding-left:70px;
+	text-align: center;
+	width: 350px;
+	display: block;
+	border-bottom: 2px solid rgba(27, 72, 101, 0.68);
+    margin-bottom: 30px;
 }
 #background{
 	background-color: #BEE9E8
@@ -111,6 +151,7 @@ form input[type=submit]:hover{
     outline: none;
     padding: 0px 0px 0px 0px;
     font-style: italic;
+    color: #1B4965;
 }
 
 table, th, td {
@@ -122,6 +163,9 @@ table, th, td {
 }
 #warning {
 	color: red;
+}
+.type {
+	color: #1B4965
 }
 
 
