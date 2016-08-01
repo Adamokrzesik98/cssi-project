@@ -1,8 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ title }}</title>
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="resources/main.css" type="text/css">
+  <link rel="stylesheet" href="resources/navBar.css" type="text/css">
+  <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 </head>
 <body>
-    <a href="{{ url }}">Logout</a>
-    <br>
+  <div id="header">
+  </div>
+  <div>
+    <div>
+      <ul id="navBar">
+        <li><a href={{ url }}>Logout</a></li>
+        <li><a href="/do_not_disturb">Do Not Disturb</a></li>
+        <li><a href="/check_in_out">Check In/Out</a></li>
+        <li><a href="create_sticky">Create a Sticky</a></li>
+      </ul>
+    </div>
+    <div>
+      <h1 id="title">Roommates</h1>
+      <!--<img id="navPic" src="pictures/navPic.png"> -->
+    </div>
+  </div>
