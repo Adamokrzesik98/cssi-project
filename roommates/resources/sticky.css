@@ -1,14 +1,13 @@
 #stickyTitle {
 	position: fixed;
-	color: #CAE9FF;
+	color: #1B4965;
 	border-radius: 50px;
 	top: 13%;
-	left: 17%;
+	left: 10%;
 	padding: 5px;
 	text-align: center;
 	width: 20%;
 	margin: auto;
-	background-color: #1B4965;
 }
 
 #createForm {
