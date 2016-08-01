@@ -52,21 +52,22 @@
 	position: fixed;
 	top: 70px;
 	left: 0px;
+	background-image: url(resources/background.png);
 }
 li a{
 	display: block;
 	color: #CAE9FF;
 	width: 100px;
 	padding: 8px 16px;
+	padding-bottom: 15px;
 	text-decoration: none;
 	text-align: center;
 	float: right;
-	border: 3px hidden;
+	border-bottom: 5px hidden;
 	z-index: 99996;	
 }
 li a:hover{
-	background-color: #4A8FE7;
-	border: 3px solid #4A8FE7;
+	border-bottom: 5px solid #4A8FE7;
 	text-decoration: none;
 	color: white;
 }
