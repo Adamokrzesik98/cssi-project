@@ -7,4 +7,4 @@ class Sticky(ndb.Model):
     home_key = ndb.KeyProperty(kind = 'Home')
     important = ndb.BooleanProperty(default=False)
     time_created = ndb.DateTimeProperty(auto_now=True)
-#   duration = 
+    expiration = ndb.FloatProperty(required=True)

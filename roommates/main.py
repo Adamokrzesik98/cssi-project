@@ -35,6 +35,7 @@ import logging
 from google.appengine.api import users
 import jinja2
 import os
+import time
 #import json        DELETE IF NOT USED
 #import urllib
 #import urllib2
@@ -98,6 +99,8 @@ class CreateStickyHandler(webapp2.RequestHandler):
             # Retrieve data from form
             title = self.request.get('title')
             content = self.request.get('content')
+            days = int(self.request.get('days'))
+            hours = int(self.request.get('hours'))
             # Convert 'on' or 'off' from checkbox to True or False 
             important_original = self.request.get('important')
             if important_original == 'on':
@@ -107,8 +110,11 @@ class CreateStickyHandler(webapp2.RequestHandler):
             # Retrieve person and home objects
             person = login.is_roommate_account_initialized(user)
             home = Home.query().filter(Home.key == person.home_key).fetch()
+            # Calculate expiration time
+            cur_time = time.time()
+            expir_time = cur_time + days*24*60*60 + hours*60*60
             # Create and put new sticky
-            new_sticky = Sticky(title= title, content= content, important= important, author= person.user_id, home_key= person.home_key)
+            new_sticky = Sticky(title= title, content= content, important= important, author= person.user_id, home_key= person.home_key, expiration= expir_time)
             new_sticky.put()
             render.render_page(self, 'stickyCreated.html', "Sticky Created")
             helpers.redirect(self, '/dashboard', 1000)

@@ -2,6 +2,7 @@ import render
 from home import Home
 from person import Person
 from sticky import Sticky
+import time
 import logging
 
 
@@ -33,12 +34,13 @@ def getDashData(self, person):
 				if p.do_not_disturb:
 					dnd_state = True
 					has_dnd_on.append(p)
+			# Check for and delete expired sticky notes
 			for sticky_note in Sticky.query().filter(Sticky.home_key == person.home_key).fetch():
-				home_stickies.append(sticky_note)
-
-
-				
-
+				if sticky_note.expiration < time.time():
+					sticky_note.key.delete()
+				else:
+					home_stickies.append(sticky_note)
+					
 			# for person in people_in_home:
 			# 	logging.info(person.name)
 
