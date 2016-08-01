@@ -1,15 +1,15 @@
 
 		<h1>Dashboard</h1>
 		<form action="/do_not_disturb" method="post">
-			<input ng-show="!users.get_current_user().home_key.get().do_not_disturb" type="submit" value="Toggle Do Not Disturb"/>
+			<input type="submit" value="Toggle Do Not Disturb"/>
 			<br>
 		</form>
 		<form action="/check_in_out" method="post">
-			<input ng-show=True type="submit" value="Check in or Out"/>
+			<input type="submit" value="Check in or Out"/>
 			<br>
 		</form>
 		<form action="/create_sticky" method="get">
-			<input ng-show=True type="submit" value="Create a Sticky"/>
+			<input type="submit" value="Create a Sticky"/>
 			<br>
 		</form>
 
