@@ -49,6 +49,7 @@
 	z-index: 99990;
 }
 #page{
+	width: 100%;
 	position: fixed;
 	top: 70px;
 	left: 0px;
