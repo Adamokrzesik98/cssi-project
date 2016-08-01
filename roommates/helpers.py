@@ -48,7 +48,8 @@ def getDashData(self, person):
 
 			# for person in people_in_home:
 			# 	logging.info(person.name)
-			return_data = {'room_name': room_name,'checked_in' : checked_in, 'checked_out' : checked_out, 'dnd' : dnd_state, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies}
+
+			return_data = {'room_name': room_name, 'checked_in' : checked_in, 'checked_out' : checked_out, 'dnd' : dnd_state, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies, 'person': person}
 			return return_data
 
 def dndEnabled(self, enabler):
