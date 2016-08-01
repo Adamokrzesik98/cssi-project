@@ -308,6 +308,9 @@ class DeveloperHandler(webapp2.RequestHandler):
         self.response.write(
             '<html><body>{}</body></html>'.format(greeting))
 
+class SettingsHandler(webapp2.RequestHandler):
+    def get(self):
+        pass
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
@@ -319,5 +322,6 @@ app = webapp2.WSGIApplication([
     ('/create_home', CreateHomeHandler),
     ('/join_home', JoinHomeHandler),
     ('/create_calendar', CreateCalendarHandler),
-    ('/developer', DeveloperHandler)
+    ('/developer', DeveloperHandler),
+    ('/settings', SettingsHandler)
 ], debug=True)

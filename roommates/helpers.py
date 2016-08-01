@@ -53,7 +53,7 @@ def getDashData(self, person):
 			return return_data
 
 def dndEnabled(self, enabler):
-	home = Home.query().filter(Home.key == person.home_key).fetch()
+	home = Home.query().filter(Home.key == enabler.home_key).fetch()
 	for id in home[0].occupants:
 		people_in_home.append(Person.query().filter(id == Person.user_id).fetch()[0])
 	for person in people_in_home:
@@ -69,4 +69,16 @@ def sendEmail(self, to, email_sender, email_subject, message_content):
 	message.to = to
 	message.body = message_content
 	message.send()
+
+def removeFromRoom(self, person):
+	home = Home.query().filter(Home.key == person.home_key).fetch()
+	if person.user_id in home.occupants:
+		home.occupants.remove(person.user_id)
+	person.home_key = None
+	person.put()
+	home.put()
+
+
+
+
 
