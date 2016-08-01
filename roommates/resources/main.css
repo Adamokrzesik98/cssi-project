@@ -4,3 +4,11 @@
 .text_boxes{
 	font-size: x-large;
 }
+
+table, th, td {
+		border: 1px solid black;
+		text-align: center;
+}
+.table_content {
+	color: #CAE9FF;
+}

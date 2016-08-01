@@ -1,27 +1,34 @@
 
 		<h1>Dashboard</h1>
-
-		<div>
-			{% if dnd %}
-				<p>DO NOT DISTURB - turned on by: </p>
-				{% for p in has_dnd_on %}
-					{{p.name}} 
-				{% endfor %}
-			{% else %}
-				<p>Do not disturb off</p>
-			{% endif %}
-
-		</div>
+			<table>
+				<tr bgcolor="#1B4965">
+					{% if dnd %}
+						<th class="table_content">DO NOT DISTURB - turned on by: </th>
+				</tr>
+						</br>
+				<tr bgcolor="#1B4965">
+					{% for p in has_dnd_on %}
+						<td class="table_content">{{p.name}}</td> 
+					{% endfor %}
+				</tr>
+					{% else %}
+						<td class="table_content">Do not disturb off</td>
+					{% endif %}
+			</table>
 		<br />
 		<br />
-		<div>
-			Checked in:
-			<ul>
-				{% for person in checked_in %}
-					<li>{{person.name}}</li>
-				{% endfor %}
-			</ul>
-		</div>
+		<table>
+			<tr bgcolor="#1B4965">
+				<th class = "table_content">Who's in {{room_name}}?
+				</th>
+			</tr>
+			<tr bgcolor="#1B4965">
+				</br>
+					{% for person in checked_in %}
+						<td class="table_content">{{person.name}}</td>
+					{% endfor %}
+			</tr>
+		</table>
 		
 
 		<div>

@@ -36,11 +36,11 @@ def getDashData(self, person):
 			for sticky_note in Sticky.query().filter(Sticky.home_key == person.home_key).fetch():
 				home_stickies.append(sticky_note)
 
-
-				
+			room_name = home[0].name
+			
 
 			# for person in people_in_home:
 			# 	logging.info(person.name)
 
-			return_data = {'checked_in' : checked_in, 'checked_out' : checked_out, 'dnd' : dnd_state, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies}
+			return_data = {'room_name': room_name, 'checked_in' : checked_in, 'checked_out' : checked_out, 'dnd' : dnd_state, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies}
 			return return_data
