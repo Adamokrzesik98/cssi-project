@@ -1,7 +1,7 @@
 #title{
 	position: fixed;
 	top: 5px;
-	left: 5px;
+	left: 10px;
 	font-size: 50px;
 	color: #CAE9FF;
 	text-align: left;
@@ -48,17 +48,10 @@
 	background-color: #1B4965;
 	z-index: 99990;
 }
-#page{
-	width: 100%;
-	position: fixed;
-	top: 70px;
-	left: 0px;
-	background-image: url(resources/background.png);
-}
 li a{
 	display: block;
 	color: #CAE9FF;
-	width: 100px;
+	width: 125px;
 	padding: 8px 16px;
 	padding-bottom: 15px;
 	text-decoration: none;
