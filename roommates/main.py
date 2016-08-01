@@ -182,7 +182,7 @@ class CreateHomeHandler(webapp2.RequestHandler):
             person = login.is_roommate_account_initialized(user)
             if person:
                 # Display create a Home page
-                render.render_page(self, 'createHome.html', 'Create a Home')
+                render.render_page_without_header(self, 'createHome.html', 'Create a Home')
             else:
                helpers.redirect(self, '/',0)
         # If there is no user, prompt client to login
@@ -213,7 +213,7 @@ class JoinHomeHandler(webapp2.RequestHandler):
             person = login.is_roommate_account_initialized(user)
             if person:
                 # Display create a Home page
-                render.render_page(self, 'joinHome.html', 'Join a Home')
+                render.render_page_without_header(self, 'joinHome.html', 'Join a Home')
             else:
                helpers.redirect(self, '/',0)
         # If there is no user, prompt client to login

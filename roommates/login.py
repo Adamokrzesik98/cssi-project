@@ -40,4 +40,4 @@ def is_roommate_account_initialized(user):
 # Renders page for current client to create a roommate account
 # Must pass in self when using  
 def initialize_roommate_account(self):
-        render.render_page(self, 'createAccount.html', 'Create Account')
+        render.render_page_without_header(self, 'createAccount.html', 'Create Account')
