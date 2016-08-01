@@ -80,7 +80,20 @@
 	margin-bottom: 5%;
 }
 
+form input[type=submit] {
+	position: relative;
+	left: 50px;
+	background-color: #BEE9E8;
+    border: 2px solid #576490;
+    padding: 8px 10px 8px 10px;
+    border-radius: 10px;
+    color: #1B4965;
+    font-size: 20px;
+}
 
+form input[type=submit]:hover{
+	background-color: #576490;
+}
 
 
 .centered_title{
