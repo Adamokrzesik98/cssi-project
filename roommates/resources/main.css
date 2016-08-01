@@ -12,3 +12,6 @@ table, th, td {
 .table_content {
 	color: #CAE9FF;
 }
+#warning {
+	color: red;
+}
