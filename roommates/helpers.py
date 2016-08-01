@@ -5,6 +5,9 @@ from sticky import Sticky
 import time
 import logging
 
+#For email send
+from google.appengine.api import mail
+
 
 # redirect current page to address
 def redirect(self, address, wait_time):
@@ -25,7 +28,6 @@ def getDashData(self, person):
 			has_dnd_on = []
 			for id in home[0].occupants:
 				people_in_home.append(Person.query().filter(id == Person.user_id).fetch()[0])
-
 			for p in people_in_home:
 				if p.location:
 					checked_in.append(person)
@@ -47,5 +49,43 @@ def getDashData(self, person):
 			# for person in people_in_home:
 			# 	logging.info(person.name)
 
+<<<<<<< Updated upstream
 			return_data = {'room_name': room_name, 'checked_in' : checked_in, 'checked_out' : checked_out, 'dnd' : dnd_state, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies}
 			return return_data
+=======
+			return_data = {'checked_in' : checked_in, 'checked_out' : checked_out, 'dnd' : dnd_state, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies}
+			return return_data
+
+def dndEnabled(self, enabler):
+	home = Home.query().filter(Home.key == person.home_key).fetch()
+	for id in home[0].occupants:
+		people_in_home.append(Person.query().filter(id == Person.user_id).fetch()[0])
+	for person in people_in_home:
+		if not person.user_id == enabler.user_id:
+			email_content = "Dear " + person.name +",\n" + enabler.name + " has turned on do not disturb for your room. Enter with caution. Or better yet, not at all. ;)\nSincerely,\nThe Roomates Developer Team"
+			# Import smtplib for the actual sending function
+			sendEmail(person.user_id, 'roomatescalendars@gmail.com', 'Do Not Disturb Enabled', email_content)
+
+
+def sendEmail(self, to, email_sender, email_subject, message_content):
+	message = mail.EmailMessage(sender=email_sender,
+                            subject=email_subject)
+	message.to = to
+	message.body = message_content
+	message.send()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> Stashed changes

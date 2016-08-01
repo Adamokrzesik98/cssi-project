@@ -172,7 +172,7 @@ class CreateAccountHandler(webapp2.RequestHandler):
         phone_number = int(self.request.get('phone_number1') + self.request.get('phone_number2') + self.request.get('phone_number3'))
         #create new person object
         user = users.get_current_user()
-        person = Person(name= name, phone_number = phone_number, user_id = user.user_id())
+        person = Person(name= name, phone_number = phone_number, user_id = user.user_id(), email_address = user.email())
         person.put()
         #redirect to join or create a home page
         helpers.redirect(self, '/create_home', 500)
@@ -307,7 +307,6 @@ class DeveloperHandler(webapp2.RequestHandler):
 
         self.response.write(
             '<html><body>{}</body></html>'.format(greeting))
-
 
 
 app = webapp2.WSGIApplication([
