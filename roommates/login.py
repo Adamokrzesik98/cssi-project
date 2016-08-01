@@ -18,8 +18,10 @@ def render_login_page(self):
     # Create google login url
     login_url = users.create_login_url('/')
     data = {'url': login_url}
-    # Render Header
-    render.render_page_with_data(self, 'login.html', 'Login', data)
+    # Render page contents
+    page = env.get_template('login.html')
+    self.response.write(page.render(data))
+
 
 
 # Takes a user object as input and checks if that  google user has a roommate account set up. 
