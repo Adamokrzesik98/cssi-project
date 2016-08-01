@@ -16,9 +16,19 @@
 
 .centered_title{
 	text-align: center;
+	color: #1B4965;
+}
+#background{
+	background-color: #BEE9E8
 }
 .text_boxes{
 	font-size: x-large;
+	background: transparent;
+    border: none;
+    border-bottom: 2px dashed #576490;
+    outline: none;
+    padding: 0px 0px 0px 0px;
+    font-style: italic;
 }
 
 table, th, td {
