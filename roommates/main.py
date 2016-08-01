@@ -58,7 +58,7 @@ class MainHandler(webapp2.RequestHandler):
             person = login.is_roommate_account_initialized(user)
             if person:
                 home = Home.query().filter(Home.key == person.home_key).fetch()
-                
+
                 # Render Dashboard
                 ######### Create Function that takes person as input to render dashboard ##########
                 helpers.redirect(self, '/dashboard', 0)
@@ -114,7 +114,7 @@ class CreateStickyHandler(webapp2.RequestHandler):
 
 
 class DoNotDisturbHandler(webapp2.RequestHandler):
-    def post(self):
+    def get(self):
         user = users.get_current_user()
         if user:
             person = login.is_roommate_account_initialized(user)
@@ -133,7 +133,7 @@ class DoNotDisturbHandler(webapp2.RequestHandler):
 
 
 class CheckInOutHandler(webapp2.RequestHandler):
-    def post(self):
+    def get(self):
         user = users.get_current_user()
         if user:
             person = login.is_roommate_account_initialized(user)
