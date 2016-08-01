@@ -1,14 +1,32 @@
-<!DOCTYPE html>
-<html>
-	<head>
 
-	</head>
-	<body>
-		<form action="" method="post">
+		<h1>Dashboard</h1>
+		<form action="/do_not_disturb" method="post">
 			<input ng-show="!users.get_current_user().home_key.get().do_not_disturb" type="submit" value="Toggle Do Not Disturb"/>
-			<br />
-			<p>{{dnd_state}}
-
+			<br>
 		</form>
-	</body>
-</html>
+		<form action="/check_in_out" method="post">
+			<input ng-show=True type="submit" value="Check in or Out"/>
+			<br>
+		</form>
+		<form action="/create_sticky" method="get">
+			<input ng-show=True type="submit" value="Create a Sticky"/>
+			<br>
+		</form>
+
+
+		<div>
+			Checked in:
+			<ul>
+				{% for person in checked_in %}
+					<li>{{person.name}}</li>
+				{% endfor %}
+			</ul>
+
+			Checked Out:
+			<ul>
+				{% for person in checked_out %}
+					<li>{{person.name}}</li>
+				{% endfor %}
+			</ul>
+		</div>
+	
