@@ -24,6 +24,7 @@ from sticky import Sticky
 import helpers
 import login
 import render
+import logging
 
 # Outside libraries
 from google.appengine.api import users
@@ -190,11 +191,35 @@ class DeveloperHandler(webapp2.RequestHandler):
         self.response.write(
             '<html><body>{}</body></html>'.format(greeting))
 
+class DashBoardHandler(webapp2.RequestHandler):
+    def get(self):
+        render.render_page(self, 'dashboard.html', "Developer" +"'s Dashboard")
+
+    def post(self):
+        user = users.get_current_user()
+        person = login.is_roommate_account_initialized(user)
+        if user:
+            home = person.home_key.get()
+            if(home.do_not_disturb):
+                home.do_not_disturb = False
+                home.put()
+            else:
+                home.do_not_disturb = True
+                home.put()
+        if(home.do_not_disturb):
+            data = {'dnd_state' : 'DO NOT DISTURB!'}
+        else:
+            data = {'dnd_state' : 'Do not disturb is off.'}
+        render.render_page_with_data(self, 'dashboard.html', "Developer" +"'s Dashboard", data)
+
+
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/create_account', CreateAccountHandler),
     ('/create_home', CreateHomeHandler),
     ('/join_home', JoinHomeHandler),
     ('/calendar', CalendarHandler),
-    ('/developer', DeveloperHandler)
+    ('/developer', DeveloperHandler),
+    ('/dash', DashBoardHandler)
 ], debug=True)

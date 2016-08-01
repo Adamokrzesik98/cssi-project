@@ -1,1 +1,14 @@
-Dashboard
+<!DOCTYPE html>
+<html>
+	<head>
+
+	</head>
+	<body>
+		<form action="" method="post">
+			<input ng-show="!users.get_current_user().home_key.get().do_not_disturb" type="submit" value="Toggle Do Not Disturb"/>
+			<br />
+			<p>{{dnd_state}}
+
+		</form>
+	</body>
+</html>
