@@ -49,11 +49,7 @@ def getDashData(self, person):
 			# for person in people_in_home:
 			# 	logging.info(person.name)
 
-<<<<<<< Updated upstream
-			return_data = {'room_name': room_name, 'checked_in' : checked_in, 'checked_out' : checked_out, 'dnd' : dnd_state, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies}
-			return return_data
-=======
-			return_data = {'checked_in' : checked_in, 'checked_out' : checked_out, 'dnd' : dnd_state, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies}
+			return_data = {'room_name': room_name, 'checked_in' : checked_in, 'checked_out' : checked_out, 'dnd' : dnd_state, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies, 'person': person}
 			return return_data
 
 def dndEnabled(self, enabler):
@@ -74,18 +70,3 @@ def sendEmail(self, to, email_sender, email_subject, message_content):
 	message.body = message_content
 	message.send()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
->>>>>>> Stashed changes
