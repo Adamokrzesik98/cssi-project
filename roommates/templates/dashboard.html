@@ -1,17 +1,19 @@
 
 		<h1>Dashboard</h1>
 
-
-
 		<div>
 			{% if dnd %}
-				<p>DO NOT DISTURB</p>
+				<p>DO NOT DISTURB - turned on by: </p>
+				{% for p in has_dnd_on %}
+					{{p.name}} 
+				{% endfor %}
 			{% else %}
 				<p>Do not disturb off</p>
 			{% endif %}
 
 		</div>
-
+		<br />
+		<br />
 		<div>
 			Checked in:
 			<ul>
