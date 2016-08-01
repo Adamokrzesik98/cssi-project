@@ -16,7 +16,7 @@
 
 <div id="createForm">	
 	<form action="/create_sticky" method="post">
-   		<h6>Title: <input type="text" name="title" required/></h6>
+   		<h6>Title: <input id="boxTooShort" type="text" name="title" required/></h6>
     	<h6>Message: <input type="text" name="content" required/></h6>
     	<h6>Important? <input type="checkbox" name="important"/></h6>
     	<h6>How long do you want this sticky to last? <br /><br /> <input list = "days" name = "days" required> Days <br /><br /><input list = "hours" name = "hours" required> Hours</h6>
