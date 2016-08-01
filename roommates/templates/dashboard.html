@@ -15,6 +15,15 @@
 
 
 		<div>
+			{% if dnd %}
+				<p>DO NOT DISTURB</p>
+			{% else %}
+				<p>Do not disturb off</p>
+			{% endif %}
+
+		</div>
+
+		<div>
 			Checked in:
 			<ul>
 				{% for person in checked_in %}
@@ -29,4 +38,14 @@
 				{% endfor %}
 			</ul>
 		</div>
+		
+
+		<div>
+			<ul>
+			{% for sticky in home_stickies %}
+				<li>{{sticky.title}}: {{sticky.content}}<br />Created on: {{sticky.time_created}}</li>
+			{% endfor %}
+			</ul>
+		</div>
+
 	

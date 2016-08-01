@@ -60,7 +60,6 @@ class MainHandler(webapp2.RequestHandler):
                 home = Home.query().filter(Home.key == person.home_key).fetch()
                 
                 # Render Dashboard
-                ######### Create Function that takes person as input to render dashboard ##########
                 helpers.redirect(self, '/dashboard', 0)
             # Otherwise, prompt user to create account
             else:
@@ -76,7 +75,10 @@ class DashboardHandler(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         if user:
-            render.render_page(self, 'dashboard.html', "Developer" +"'s Dashboard")
+             ######### Create Function that takes person as input to render dashboard ##########
+            person = login.is_roommate_account_initialized(user)
+            render_data = helpers.getDashData(self, person)
+            render.render_page_with_data(self, 'dashboard.html', "Developer" +"'s Dashboard", render_data)
         else:
             helpers.redirect(self, '/', 0)
 
