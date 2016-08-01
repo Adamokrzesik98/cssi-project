@@ -1,35 +1,29 @@
 
 		<h1 id="dash_title">{{ person.name }}'s Dashboard</h1>
-			<table>
-				<tr bgcolor="#1B4965">
-					{% if dnd %}
-						<th class="table_content">DO NOT DISTURB - turned on by: </th>
-				</tr>
-						</br>
-				<tr bgcolor="#1B4965">
-					{% for p in has_dnd_on %}
-						<td class="table_content">{{p.name}}</td> 
-					{% endfor %}
-				</tr>
-					{% else %}
-						<td class="table_content">Do not disturb off</td>
-					{% endif %}
-			</table>
-		<br />
-		<br />
-		<table>
-			<tr bgcolor="#1B4965">
-				<th class = "table_content">Who's currintly in the room: {{room_name}}
-				</th>
-			</tr>
-			<tr bgcolor="#1B4965">
-				</br>
-					{% for person in checked_in %}
-						<td class="table_content">{{person.name}}</td>
-					{% endfor %}
-			</tr>
-		</table>
-		
+		<div id="main_left">
+			<div id="do_not_disturb_frame">
+						{% if dnd %}
+							<h3 id="do_not_disturb_title">DO NOT DISTURB</h3>
+							<div class="name_box">
+								{% for person in has_dnd_on %}
+									<div class="do_not_disturb_item">{{person.name}}</div>
+								{% endfor %}
+							</div>
+						{% endif %}
+			
+			</div>
+			<div id="whos_in_the_room_frame">
+						{% if checked_in %}
+							<h3 id="whos_in_the_room_title">Who's currently in the room: {{room_name}}</h3>
+							{% for person in checked_in %}
+								<div class="whos_in_the_room_item">{{person.name}}</div>
+							{% endfor %}
+						{% endif %}
+			
+			</div>
+		</div>
+
+
 
 		<div>
 			<ul>
