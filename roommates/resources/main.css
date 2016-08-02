@@ -154,6 +154,19 @@ form input[type=submit]:hover{
 	border-bottom: 2px solid rgba(27, 72, 101, 0.68);
     margin-bottom: 30px;
 }
+.centered_content {
+	margin: auto;
+	color: #1B4965;
+	top: 40px;
+	left: 30px;
+	padding: 5px;
+	padding-right:70px;
+	padding-left:70px;
+	text-align: center;
+	width: 350px;
+	display: block;
+    margin-bottom: 30px;
+}
 #background{
 	background-color: #BEE9E8
 }
