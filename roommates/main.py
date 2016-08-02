@@ -20,6 +20,7 @@ from person import Person
 from home import Home
 from sticky import Sticky
 from chores import Chore
+from bills import Bills
 
 
 # Personal Libraries
@@ -130,13 +131,13 @@ class AssignBillHandler(webapp2.RequestHandler):
             person = login.is_roommate_account_initialized(user)
             if person:
                 home = Home.query(Home.key == person.home_key).fetch()[0]
-                payers = []
+                possible_payers = []
                 for user_id in home.occupants:
                     p = Person.query().filter(Person.user_id == user_id).fetch()[0]
-                    payers.append(p)
-                data = {'payers':payers}
+                    possible_payers.append(p)
+                data = {'payers': possible_payers}
                 render.render_page_with_data(self, 'bills.html', 'Assign a Bill', data)
-                else:
+            else:
                 helpers.redirect(self, '/', 0)
         else:
             helpers.redirect(self, '/', 0)
@@ -146,10 +147,10 @@ class AssignBillHandler(webapp2.RequestHandler):
         home = Home.query(Home.key == person.home_key).fetch()[0]
         bill_name = self.request.get('bill_name')
         payer_id = self.request.get('payer')
-        payer_name = Person.query().filter(Person.user_id == user_id).fetch()[0]
-        bill = Bills(bill_name=bill_name, payer_id=payer_id)
+        payer_name = Person.query().filter(Person.user_id == payer_id).fetch()[0].name
+        bill = Bills(bill_name=bill_name, payer_id=payer_id, payer_name = payer_name)
         bill.put()
-        render.render_page(self, 'billCreated', 'Bill Created')
+        render.render_page(self, 'billsCreated.html', 'Bill Created')
         helpers.redirect(self, '/dashboard', 1000)
 
 
