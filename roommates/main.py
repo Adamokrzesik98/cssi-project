@@ -58,8 +58,6 @@ class MainHandler(webapp2.RequestHandler):
             # Check if user has an account set up
             person = login.is_roommate_account_initialized(user)
             if person:
-                home = Home.query().filter(Home.key == person.home_key).fetch()
-
                 # Render Dashboard
                 helpers.redirect(self, '/dashboard', 0)
             # Otherwise, prompt user to create account
@@ -76,10 +74,12 @@ class DashboardHandler(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         if user:
-             ######### Create Function that takes person as input to render dashboard ##########
             person = login.is_roommate_account_initialized(user)
-            render_data = helpers.getDashData(self, person)
-            render.render_page_with_data(self, 'dashboard.html', "Developer" +"'s Dashboard", render_data)
+            if person:
+                render_data = helpers.getDashData(self, person)
+                render.render_page_with_data(self, 'dashboard.html', "Developer" +"'s Dashboard", render_data)
+            else:
+               helpers.redirect(self, '/', 0) 
         else:
             helpers.redirect(self, '/', 0)
 
@@ -89,7 +89,11 @@ class CreateStickyHandler(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         if user:
-            render.render_page(self, 'createSticky.html', "Create a Sticky")
+            person = login.is_roommate_account_initialized(user)
+            if person:
+                render.render_page(self, 'createSticky.html', "Create a Sticky")
+            else:
+                helpers.redirect(self, '/', 0)
         else:
             helpers.redirect(self, '/', 0)
         
@@ -126,18 +130,22 @@ class DoNotDisturbHandler(webapp2.RequestHandler):
         user = users.get_current_user()
         if user:
             person = login.is_roommate_account_initialized(user)
-            if(person.do_not_disturb):
-                person.do_not_disturb = False
-                person.put()
+            if person:
+                if(person.do_not_disturb):
+                    person.do_not_disturb = False
+                    data = {'dnd_state' : 'Do not disturb is off.'}
+                    person.put()
+                else:
+                    person.do_not_disturb = True
+                    data = {'dnd_state' : 'DO NOT DISTURB!'}
+                    person.put()
+                render.render_page_with_data(self, 'doNotDisturb.html', "Do Not Disturb Toggle", data)
+                helpers.redirect(self, '/dashboard', 1000)
             else:
-                person.do_not_disturb = True
-                person.put()
-        if(person.do_not_disturb):
-            data = {'dnd_state' : 'DO NOT DISTURB!'}
+                helpers.redirect(self, '/', 0)
         else:
-            data = {'dnd_state' : 'Do not disturb is off.'}
-        render.render_page_with_data(self, 'doNotDisturb.html', "Do Not Disturb Toggle", data)
-        helpers.redirect(self, '/dashboard', 1000)
+            helpers.redirect(self, '/', 0)
+
 
 
 class CheckInOutHandler(webapp2.RequestHandler):
@@ -145,18 +153,21 @@ class CheckInOutHandler(webapp2.RequestHandler):
         user = users.get_current_user()
         if user:
             person = login.is_roommate_account_initialized(user)
-            if(person.location):
-                person.location = False
-                person.put()
+            if person:
+                if(person.location):
+                    person.location = False
+                    person.put()
+                else:
+                    person.location = True
+                    person.put()
+                if(person.location):
+                    data = {'check_in_state' : 'Checked In!'}
+                else:
+                    data = {'check_in_state' : 'Checked Out!'}
+                render.render_page_with_data(self, 'checkInState.html', "Check In or Out", data)
+                helpers.redirect(self, '/dashboard', 1000)
             else:
-                person.location = True
-                person.put()
-            if(person.location):
-                data = {'check_in_state' : 'Checked In!'}
-            else:
-                data = {'check_in_state' : 'Checked Out!'}
-            render.render_page_with_data(self, 'checkInState.html', "Check In or Out", data)
-            helpers.redirect(self, '/dashboard', 1000)
+             helpers.redirect(self, '/',0)   
         else:
             helpers.redirect(self, '/',0)
 
@@ -175,7 +186,15 @@ class DeleteStickyHandler(webapp2.RequestHandler):
 
 class CreateAccountHandler(webapp2.RequestHandler):
     def get(self):
-        login.initialize_roommate_account(self)
+        user = users.get_current_user()
+        if user:
+            person = login.is_roommate_account_initialized(user)
+            if not person:
+                login.initialize_roommate_account(self)
+            else:
+             helpers.redirect(self, '/dashboard',0)   
+        else:
+            helpers.redirect(self, '/',0)
 
     def post(self):
         #retrieve data from form
@@ -256,7 +275,7 @@ class JoinHomeHandler(webapp2.RequestHandler):
         else:
             # REPORT to client to try again. wrong name or password
             data = {'error': 'You have entered an incorrect home name or password'}
-            render.render_page_with_data(self, 'joinHome.html', 'Error: Wrong Name or Password', data)
+            render.render_page_without_header_with_data(self, 'joinHome.html', 'Error: Wrong Name or Password', data)
 
 
         ## TODO: redirect to create a calendar

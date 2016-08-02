@@ -47,3 +47,11 @@ def render_page_without_header(self, page_html, page_title):
     # Render footer
     footer = env.get_template('footer.html')
     self.response.write(footer.render())
+
+def render_page_without_header_with_data(self, page_html, page_title, data):
+    # Render page contents
+    page = env.get_template(page_html)
+    self.response.write(page.render(data))
+    # Render footer
+    footer = env.get_template('footer.html')
+    self.response.write(footer.render())
