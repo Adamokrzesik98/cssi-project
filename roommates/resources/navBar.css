@@ -51,7 +51,8 @@
 li a{
 	display: block;
 	color: #CAE9FF;
-	width: 125px;
+	font-size: 13px;
+	width: 100px;
 	padding: 8px 16px;
 	padding-bottom: 15px;
 	text-decoration: none;

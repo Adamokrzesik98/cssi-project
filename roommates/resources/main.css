@@ -121,6 +121,10 @@
 .dropdown:hover .dropdown_content{
 	display: inline-block;
 }
+#chore_frame{
+	float: left;
+	width: 100%;
+}
 #chore_title{
 	color: #CAE9FF;
 	border-radius: 50px;
@@ -156,22 +160,30 @@
 	background-color: #576490;
 	margin-bottom: 5%;
 }
-
-
-
-
-
-
-
-
-
-
-
-#cal{
+#bill_frame{
 	float: left;
-	border: 10px solid #1B4965;
-	border-radius: 15px;
+	width: 100%;
 }
+#bill_title{
+	color: #CAE9FF;
+	border-radius: 50px;
+	padding: 5px;
+	text-align: center;
+	width: 100%;
+	margin: auto;
+	background-color: #1B4965;
+	margin-bottom: 5%;
+}
+#cal_frame{
+	float: left;
+	width: 100%;
+	border: 10px solid #1B4965;
+	border-radius: 8px;
+}
+
+
+
+
 form input[type=submit] {
 	position: relative;
 	left: 50px;

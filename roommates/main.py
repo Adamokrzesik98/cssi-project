@@ -275,7 +275,8 @@ class AssignBillHandler(webapp2.RequestHandler):
         bill_name = self.request.get('bill_name')
         payer_id = self.request.get('payer')
         payer_name = Person.query().filter(Person.user_id == payer_id).fetch()[0].name
-        bill = Bills(bill_name=bill_name, payer_id=payer_id, payer_name = payer_name)
+        home_key = home.key
+        bill = Bills(bill_name=bill_name, home_key = home_key, payer_id=payer_id, payer_name = payer_name)
         bill.put()
         render.render_page(self, 'billsCreated.html', 'Bill Created')
         helpers.redirect(self, '/dashboard', 1000)

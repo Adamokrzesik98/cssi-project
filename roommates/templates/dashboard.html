@@ -67,21 +67,22 @@
 						{% endif %}
 			
 			</div>
+			<div id="bill_frame">
+						<h3 id="bill_title">Bills</h3>
+						{% if bills: %}
+							<div class="name_box">
+								{% for bill in bills: %}
+									<div class="chore_item">{{bill.bill_name}}</div>
+									<div class="worker_item">{{bill.payer_name}}</div>
+								{% endfor %}
+							</div>
+						{% else %}
+							<div class="worker_item">No Bills</div>
+						{% endif %}
+			
+			</div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-			<div id="cal">
+			<div id="cal_frame">
 				<iframe id="embededCal" src="https://calendar.google.com/calendar/embed?src=google.com_sgtv7hsmtvlc8hdc1c0u5t8a00%40group.calendar.google.com&ctz=America/Chicago" style="border: 5" width="550" height="600" frameborder="0" scrolling="no"></iframe>
 			</div>
 >>>>>>> origin/master
