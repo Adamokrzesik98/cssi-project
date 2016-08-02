@@ -205,7 +205,7 @@ class DashboardHandler(webapp2.RequestHandler):
             person = login.is_roommate_account_initialized(user)
             if person:
                 render_data = helpers.getDashData(self, person)
-                render.render_page_with_data(self, 'dashboard.html', "Developer" +"'s Dashboard", render_data)
+                render.render_page_with_data(self, 'dashboard.html', person.name +"'s Dashboard", render_data)
             else:
                helpers.redirect(self, '/', 0) 
         else:
