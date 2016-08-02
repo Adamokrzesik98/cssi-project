@@ -76,7 +76,7 @@
 	border-radius: 25px;
 	padding: 5px;
 	text-align: center;
-	width: 25%;
+	width: 22.7%;
 	margin: auto;
 	background-color: #4A8FE7;
 	margin-bottom: 5%;
@@ -98,7 +98,7 @@
 .sticky_item{
 	display: inline-block;
 	color: #CAE9FF;
-	font-size: 5%
+	font-size: 7%
 	border 2px;
 	border-radius: 25px;
 	padding: 5px;
@@ -106,7 +106,21 @@
 	width: 100%;
 	margin: auto;
 	background-color: #4A8FE7;
+}
+.dropdown{
 	margin-bottom: 5%;
+}
+.dropdown form input[type=submit]{
+	position: relative;
+	left: 0px;
+	margin: 2px;
+}
+.dropdown_content{
+	display: none;
+	min-width: 200px;
+}
+.dropdown:hover .dropdown_content{
+	display: inline-block;
 }
 
 form input[type=submit] {

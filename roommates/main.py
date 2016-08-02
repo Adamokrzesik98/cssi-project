@@ -162,6 +162,17 @@ class CheckInOutHandler(webapp2.RequestHandler):
 
 
 
+
+class DeleteStickyHandler(webapp2.RequestHandler):
+    def post(self): 
+        None
+#        sticky_expir = float(self.request.get('sticky_expir').replace("u'","").replace("'",""))
+#        sticky = Sticky.query().filter(Sticky.expiration==sticky_expir).fetch()[0]
+#        sticky.key.delete()
+#        helpers.redirect(self, '/dashboard', 1000)
+
+
+
 class CreateAccountHandler(webapp2.RequestHandler):
     def get(self):
         login.initialize_roommate_account(self)
@@ -206,7 +217,7 @@ class CreateHomeHandler(webapp2.RequestHandler):
         person.home_key = new_home.put()
         person.put()
         #redirect to create a calendar
-        helpers.redirect(self, '/create_calendar',0)
+        helpers.redirect(self, '/dashboard',1000)
 
 
 
@@ -241,6 +252,7 @@ class JoinHomeHandler(webapp2.RequestHandler):
             person.put()
             data = {'home_name': home_name}
             render.render_page_with_data(self, 'successfullyJoinedHome.html', 'Successfully Joined Home', data)
+            helpers.redirect(self, '/dashboard', 1000)
         else:
             # REPORT to client to try again. wrong name or password
             data = {'error': 'You have entered an incorrect home name or password'}
@@ -248,7 +260,7 @@ class JoinHomeHandler(webapp2.RequestHandler):
 
 
         ## TODO: redirect to create a calendar
-        helpers.redirect(self, '/dashboard', 1000)
+        
 
 
 
@@ -318,6 +330,7 @@ app = webapp2.WSGIApplication([
     ('/check_in_out', CheckInOutHandler),
     ('/create_sticky', CreateStickyHandler),
     ('/dashboard', DashboardHandler),
+    ('/delete_sticky', DeleteStickyHandler),
     ('/create_account', CreateAccountHandler),
     ('/create_home', CreateHomeHandler),
     ('/join_home', JoinHomeHandler),

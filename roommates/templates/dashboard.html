@@ -3,10 +3,10 @@
 		<div id="main_left">
 			<div id="do_not_disturb_frame">
 						<h3 id="do_not_disturb_title">DO NOT DISTURB</h3>
-						{% if dnd %}
+						{% if has_dnd_on: %}
 							<div class="name_box">
-								{% for person in has_dnd_on %}
-									<div class="do_not_disturb_item">{{person.name}}</div>
+								{% for p in has_dnd_on: %}
+									<div class="do_not_disturb_item">{{p.name}}</div>
 								{% endfor %}
 							</div>
 						{% else %}
@@ -17,19 +17,32 @@
 			<div id="whos_in_the_room_frame">
 						<h3 id="whos_in_the_room_title">Who's currently in the room: {{room_name}}</h3>
 						{% if checked_in %}
-							{% for person in checked_in %}
-								<div class="whos_in_the_room_item">{{person.name}}</div>
+							{% for p in checked_in: %}
+								<div class="whos_in_the_room_item">{{ p.name }}</div>
 							{% endfor %}
 						{% else %}
 							<div class="whos_in_the_room_item">No One</div>
 						{% endif %}
-			
 			</div>
 			<div id="sticky_frame">
 						<h3 id="sticky_title">Stickies</h3>
-						{% if home_stickies %}
-							{% for sticky in home_stickies %}
-								<div class="sticky_item">{{sticky.title}}: {{sticky.content}} <br>Created on: {{sticky.time_created}}</div>
+						{% if home_stickies: %}
+							{% for sticky in home_stickies: %}
+								<div class="dropdown">
+									<div class="sticky_item">{{sticky.title}} : {{sticky.content}} <br>Created on: {{sticky.time_created}}</div>
+									<div class="dropdown_content">
+										<form action="/complete_sticky" method="post">
+											<input hidden name='sticky_expir' value={{ sticky.expiration }}>
+											<input type="submit" value="Mark As Complete">
+										</form>
+										{% if sticky.author == person.user_id %}
+										<form action="/delete_sticky" method="post">
+											<input hidden name='sticky_expir' value={{ sticky.expiration }}>
+											<input type="submit" value="Delete Sticky">
+										</form>
+										{% endif %}
+									</div>
+								</div>
 							{% endfor %}
 						{% else %}
 								<div class="sticky_item">No Stickies</div>
