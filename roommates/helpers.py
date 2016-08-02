@@ -1,9 +1,11 @@
 import render
+import login
 from home import Home
 from person import Person
 from sticky import Sticky
 import time
 import logging
+
 
 #For email send
 from google.appengine.api import mail
@@ -52,6 +54,8 @@ def getDashData(self, person):
 			return_data = {'room_name': room_name, 'checked_in' : checked_in, 'checked_out' : checked_out, 'dnd' : dnd_state, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies, 'person': person}
 			return return_data
 
+
+#Currently Unused
 def dndEnabled(self, enabler):
 	home = Home.query().filter(Home.key == enabler.home_key).fetch()
 	for id in home[0].occupants:
@@ -70,11 +74,28 @@ def sendEmail(self, to, email_sender, email_subject, message_content):
 	message.body = message_content
 	message.send()
 
-def removeFromRoom(self, person):
-	home = Home.query().filter(Home.key == person.home_key).fetch()
+def removeFromRoom(self, user, destroy_stickies):
+	person = login.is_roommate_account_initialized(user)
+	home = Home.query().filter(Home.key == person.home_key).fetch()[0]
+	
+	#Removes person from record of Home
 	if person.user_id in home.occupants:
 		home.occupants.remove(person.user_id)
+
+	#Resets person's values to default
 	person.home_key = None
+	person.location = False
+	person.do_not_disturb = False
+
+	if destroy_stickies:
+		#Find stickies associated with person
+		stickies = Sticky.query().filter(Sticky.author == person.user_id)
+
+	for note in stickies:
+		if note.home_key == home.key: #Only removes notes if in the home the user is currently leaving
+			Sticky.delete(note.key)
+
+	#Updates person and home entries
 	person.put()
 	home.put()
 

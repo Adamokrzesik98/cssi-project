@@ -310,7 +310,18 @@ class DeveloperHandler(webapp2.RequestHandler):
 
 class SettingsHandler(webapp2.RequestHandler):
     def get(self):
-        pass
+        render.render_page(self, 'settings.html', 'Settings')
+
+class LeaveRoomHandler(webapp2.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        if user:
+            #Add mini-form to ask if stickies should be deleted, replace True with var name
+            helpers.removeFromRoom(self, user, True) #Add confirmation for leaving room
+            helpers.redirect(self, '/create_home', 0)
+        else:
+            helpers.redirect(self, '/', 0)
+        
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
@@ -323,5 +334,6 @@ app = webapp2.WSGIApplication([
     ('/join_home', JoinHomeHandler),
     ('/create_calendar', CreateCalendarHandler),
     ('/developer', DeveloperHandler),
-    ('/settings', SettingsHandler)
+    ('/settings', SettingsHandler),
+    ('/leaveRoom', LeaveRoomHandler)
 ], debug=True)
