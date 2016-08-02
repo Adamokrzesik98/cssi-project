@@ -145,16 +145,20 @@ class CreateChoreHandler(webapp2.RequestHandler):
         user = users.get_current_user()
         person = login.is_roommate_account_initialized(user)
         home = Home.query(Home.key == person.home_key).fetch()[0]
+        home_key = home.key
         chore_name = self.request.get('chore_name')
         duration = int(self.request.get('days'))
         cur_time = time.time()
         duration = duration*24*60*60
         end_time = cur_time + duration
         workers = []
+        workers_names = []
         for p in home.occupants:
             if self.request.get(p) == 'on':
                 workers.append(p)
-        chore = Chore(chore_name= chore_name, duration=duration, end_time=end_time, workers=workers)
+                per = Person.query().filter(Person.user_id == p).fetch()[0].name
+                workers_names.append(per)
+        chore = Chore(home_key= home_key, workers_names = workers_names, chore_name= chore_name, duration=duration, end_time=end_time, workers=workers)
         chore.put()
 
 

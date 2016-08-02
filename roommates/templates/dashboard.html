@@ -51,7 +51,37 @@
 			</div>
 		</div>
 		<div id="main_right">
-			<iframe id="embededCal" src="https://calendar.google.com/calendar/embed?src=google.com_sgtv7hsmtvlc8hdc1c0u5t8a00%40group.calendar.google.com&ctz=America/Chicago" style="border: 5" width="550" height="600" frameborder="0" scrolling="no"></iframe>
+			<div id="chore_frame">
+						<h3 id="chore_title">Chores</h3>
+						{% if chores: %}
+							<div class="name_box">
+								{% for chore in chores: %}
+									<div class="chore_item">{{chore.chore_name}}</div>
+									<div class="worker_item">{{chore.workers_names[chore.index]}}</div>
+								{% endfor %}
+							</div>
+						{% else %}
+							<div class="worker_item">No Chores</div>
+						{% endif %}
+			
+			</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			<div id="cal">
+				<iframe id="embededCal" src="https://calendar.google.com/calendar/embed?src=google.com_sgtv7hsmtvlc8hdc1c0u5t8a00%40group.calendar.google.com&ctz=America/Chicago" style="border: 5" width="550" height="600" frameborder="0" scrolling="no"></iframe>
+			</div>
 		</div>
 </div>
 
