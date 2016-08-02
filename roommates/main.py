@@ -123,6 +123,38 @@ class CreateStickyHandler(webapp2.RequestHandler):
             render.render_page(self, 'stickyCreated.html', "Sticky Created")
             helpers.redirect(self, '/dashboard', 1000)
 
+class AssignBillHandler(webapp2.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        if user:
+            person = login.is_roommate_account_initialized(user)
+            if person:
+                home = Home.query(Home.key == person.home_key).fetch()[0]
+                payers = []
+                for user_id in home.occupants:
+                    p = Person.query().filter(Person.user_id == user_id).fetch()[0]
+                    payers.append(p)
+                data = {'payers':payers}
+                render.render_page_with_data(self, 'bills.html', 'Assign a Bill', data)
+                else:
+                helpers.redirect(self, '/', 0)
+        else:
+            helpers.redirect(self, '/', 0)
+    def post(self):
+        user = users.get_current_user()
+        person = login.is_roommate_account_initialized(user)
+        home = Home.query(Home.key == person.home_key).fetch()[0]
+        bill_name = self.request.get('bill_name')
+        payer_id = self.request.get('payer')
+        payer_name = Person.query().filter(Person.user_id == user_id).fetch()[0]
+        bill = Bills(bill_name=bill_name, payer_id=payer_id)
+        bill.put()
+        render.render_page(self, 'billCreated', 'Bill Created')
+        helpers.redirect(self, '/dashboard', 1000)
+
+
+
+
 class CreateChoreHandler(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
@@ -160,7 +192,8 @@ class CreateChoreHandler(webapp2.RequestHandler):
                 workers_names.append(per)
         chore = Chore(home_key= home_key, workers_names = workers_names, chore_name= chore_name, duration=duration, end_time=end_time, workers=workers)
         chore.put()
-
+        render.render_page(self, 'choreCreated.html', 'Chore Created')
+        helpers.redirect(self, '/dashboard', 1000)
 
 
 class DoNotDisturbHandler(webapp2.RequestHandler):
@@ -406,5 +439,6 @@ app = webapp2.WSGIApplication([
     ('/developer', DeveloperHandler),
     ('/settings', SettingsHandler),
     ('/create_a_chore', CreateChoreHandler),
-    ('/leaveRoom', LeaveRoomHandler)
+    ('/leaveRoom', LeaveRoomHandler),
+    ('/assign_bills',AssignBillHandler)
 ], debug=True)

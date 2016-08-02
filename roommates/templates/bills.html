@@ -1,0 +1,15 @@
+<link href="resources/sticky.css" rel="stylesheet" type="text/css"/>
+
+
+<h1 id="stickyTitle">Assign a Bill<h1>
+
+<div id="createForm">	
+	<form action="" method="post">
+   		<h6>Bill Name: <input id="boxTooShort" type="text" name="bill_name" required/></h6>
+    	<h6>Payer:</h6>
+    	{% for p in payers %}
+			<input type=radio name="payer" value={{p.user_id}}>{{p.name}}<br>
+		{% endfor %}
+    	<input type="submit" value="Click to assign a payer"/>
+	</form>
+</div>
