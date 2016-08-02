@@ -19,7 +19,7 @@
 from person import Person
 from home import Home
 from sticky import Sticky
-from chores import Chores
+from chores import Chore
 
 
 # Personal Libraries
@@ -122,6 +122,40 @@ class CreateStickyHandler(webapp2.RequestHandler):
             new_sticky.put()
             render.render_page(self, 'stickyCreated.html', "Sticky Created")
             helpers.redirect(self, '/dashboard', 1000)
+
+class CreateChoreHandler(webapp2.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        if user:
+            person = login.is_roommate_account_initialized(user)
+            if person:
+                home = Home.query(Home.key == person.home_key).fetch()[0]
+                rotation_list = []
+                for user_id in home.occupants:
+                    p = Person.query().filter(Person.user_id == user_id).fetch()[0]
+                    rotation_list.append(p)
+                data = {'rotation_list': rotation_list}
+                render.render_page_with_data(self, 'chores.html', 'Create a Chore', data)
+            else:
+                helpers.redirect(self, '/', 0)
+        else:
+            helpers.redirect(self, '/', 0)
+
+    def post(self):
+        user = users.get_current_user()
+        person = login.is_roommate_account_initialized(user)
+        home = Home.query(Home.key == person.home_key).fetch()[0]
+        chore_name = self.request.get('chore_name')
+        duration = int(self.request.get('days'))
+        cur_time = time.time()
+        duration = duration*24*60*60
+        end_time = cur_time + duration
+        workers = []
+        for p in home.occupants:
+            if self.request.get(p) == 'on':
+                workers.append(p)
+        chore = Chore(chore_name= chore_name, duration=duration, end_time=end_time, workers=workers)
+        chore.put()
 
 
 
@@ -367,5 +401,6 @@ app = webapp2.WSGIApplication([
     ('/create_calendar', CreateCalendarHandler),
     ('/developer', DeveloperHandler),
     ('/settings', SettingsHandler),
+    ('/create_a_chore', CreateChoreHandler),
     ('/leaveRoom', LeaveRoomHandler)
 ], debug=True)

@@ -1,6 +1,7 @@
 from google.appengine.ext import ndb
 
-class Chores(ndb.Model):
-	nameOfChore = ndb.StringProperty(required = True)
-	assignedTo = ndb.StringProperty(required = True)
-	lengthOfTime = ndb.FloatProperty(required=True) 
+class Chore(ndb.Model):
+	chore_name = ndb.StringProperty(required = True)
+	workers = ndb.StringProperty(repeated = True)
+	end_time = ndb.FloatProperty(required=True)
+	duration = ndb.FloatProperty(required=True) 
