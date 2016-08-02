@@ -3,6 +3,7 @@ import login
 from home import Home
 from person import Person
 from sticky import Sticky
+from chores import Chore
 import time
 import logging
 
@@ -43,14 +44,21 @@ def getDashData(self, person):
                     sticky_note.key.delete()
                 else:
                     home_stickies.append(sticky_note)
-                    
-
+            # fetch chores
+            chores = Chore.query().filter(Chore.home_key==home[0].key).fetch()
+            # update chores
+            for chore in chores:
+                if chore.end_time < time.time():
+                    chore.end_time = chore.end_time + chore.duration
+                    chore.index = (chore.index + 1)%len(chore.workers)
+                    chore.put()
+            # fetch room name
             room_name = home[0].name
 
             # for person in people_in_home:
             #   logging.info(person.name)
 
-            return_data = {'room_name': room_name, 'checked_in' : checked_in, 'checked_out' : checked_out, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies, 'person': person}
+            return_data = {'room_name': room_name, 'chores': chores, 'checked_in' : checked_in, 'checked_out' : checked_out, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies, 'person': person}
             return return_data
 
 
