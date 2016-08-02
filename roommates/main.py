@@ -19,7 +19,7 @@
 from person import Person
 from home import Home
 from sticky import Sticky
-
+from chores import Chores
 
 
 # Personal Libraries
