@@ -20,6 +20,7 @@ from person import Person
 from home import Home
 from sticky import Sticky
 from chores import Chore
+from bills import Bills
 
 
 # Personal Libraries
@@ -59,18 +60,11 @@ class MainHandler(webapp2.RequestHandler):
         # Check if there is a user signed in
         if user:
             # Check if user has an account set up
-<<<<<<< HEAD
             person = login.is_roommate_account_initialized(user) #Change to check if in home
             logging.info(person)
             if person: 
                 if login.is_in_room(self, person):
                     helpers.redirect(self, '/dashboard', 0)
-=======
-            person = login.is_roommate_account_initialized(user)
-            if person:
-                # Render Dashboard
-                helpers.redirect(self, '/dashboard', 0)
->>>>>>> origin/master
             # Otherwise, prompt user to create account
                 else: 
                     helpers.redirect(self, '/newJoinHome', 0) #/new_join_home
@@ -257,6 +251,38 @@ class CreateStickyHandler(webapp2.RequestHandler):
             render.render_page(self, 'stickyCreated.html', "Sticky Created")
             helpers.redirect(self, '/dashboard', 1000)
 
+class AssignBillHandler(webapp2.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        if user:
+            person = login.is_roommate_account_initialized(user)
+            if person:
+                home = Home.query(Home.key == person.home_key).fetch()[0]
+                possible_payers = []
+                for user_id in home.occupants:
+                    p = Person.query().filter(Person.user_id == user_id).fetch()[0]
+                    possible_payers.append(p)
+                data = {'payers': possible_payers}
+                render.render_page_with_data(self, 'bills.html', 'Assign a Bill', data)
+            else:
+                helpers.redirect(self, '/', 0)
+        else:
+            helpers.redirect(self, '/', 0)
+    def post(self):
+        user = users.get_current_user()
+        person = login.is_roommate_account_initialized(user)
+        home = Home.query(Home.key == person.home_key).fetch()[0]
+        bill_name = self.request.get('bill_name')
+        payer_id = self.request.get('payer')
+        payer_name = Person.query().filter(Person.user_id == payer_id).fetch()[0].name
+        bill = Bills(bill_name=bill_name, payer_id=payer_id, payer_name = payer_name)
+        bill.put()
+        render.render_page(self, 'billsCreated.html', 'Bill Created')
+        helpers.redirect(self, '/dashboard', 1000)
+
+
+
+
 class CreateChoreHandler(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
@@ -294,7 +320,8 @@ class CreateChoreHandler(webapp2.RequestHandler):
                 workers_names.append(per)
         chore = Chore(home_key= home_key, workers_names = workers_names, chore_name= chore_name, duration=duration, end_time=end_time, workers=workers)
         chore.put()
-
+        render.render_page(self, 'choreCreated.html', 'Chore Created')
+        helpers.redirect(self, '/dashboard', 1000)
 
 
 class DoNotDisturbHandler(webapp2.RequestHandler):
@@ -356,132 +383,8 @@ class DeleteStickyHandler(webapp2.RequestHandler):
 
 
 
-<<<<<<< HEAD
-
-
-=======
-class CreateAccountHandler(webapp2.RequestHandler):
-    def get(self):
-        user = users.get_current_user()
-        if user:
-            person = login.is_roommate_account_initialized(user)
-            if not person:
-                login.initialize_roommate_account(self)
-            else:
-             helpers.redirect(self, '/dashboard',0)   
-        else:
-            helpers.redirect(self, '/',0)
-
-    def post(self):
-        #retrieve data from form
-        name = self.request.get('name')
-        phone_number = int(self.request.get('phone_number1') + self.request.get('phone_number2') + self.request.get('phone_number3'))
-        #create new person object
-        user = users.get_current_user()
-        person = Person(name= name, phone_number = phone_number, user_id = user.user_id(), email_address = user.email())
-        person.put()
-        #redirect to join or create a home page
-        helpers.redirect(self, '/create_home', 500)
-
-
-
-class CreateHomeHandler(webapp2.RequestHandler):
-    def get(self):
-        # Get current google account that is signed in
-        user = users.get_current_user()
-        # Check if there is a user signed in
-        if user:
-            person = login.is_roommate_account_initialized(user)
-            if person:
-                # Display create a Home page
-                render.render_page_without_header(self, 'createHome.html', 'Create a Home')
-            else:
-               helpers.redirect(self, '/',0)
-        # If there is no user, prompt client to login
-        else:
-            helpers.redirect(self, '/',0)
-
-    def post(self):
-        #retrieve data from form
-        home_name = self.request.get('name')
-        password = self.request.get('password')
-        #create new person object
-        user = users.get_current_user()
-        person = login.is_roommate_account_initialized(user)
-        new_home = Home(name= home_name, password = password, occupants = [user.user_id()])
-        person.home_key = new_home.put()
-        person.put()
-        #redirect to create a calendar
-        helpers.redirect(self, '/dashboard',1000)
-
-
-
-class JoinHomeHandler(webapp2.RequestHandler):
-    def get(self):
-        # Get current google account that is signed in
-        user = users.get_current_user()
-        # Check if there is a user signed in
-        if user:
-            person = login.is_roommate_account_initialized(user)
-            if person:
-                # Display create a Home page
-                render.render_page_without_header(self, 'joinHome.html', 'Join a Home')
-            else:
-               helpers.redirect(self, '/',0)
-        # If there is no user, prompt client to login
-        else:
-            helpers.redirect(self, '/',0)
-
-    def post(self):
-        user = users.get_current_user()
-        person = login.is_roommate_account_initialized(user)
-        #retrieve data from form
-        home_name = self.request.get('name')
-        password = self.request.get('password')
-        # Query for home object
-        potential_home = Home.query().filter(Home.name == home_name, Home.password == password).fetch()
-        if potential_home:
-            potential_home[0].occupants.append(user.user_id())
-            home_key = potential_home[0].put()
-            person.home_key = home_key
-            person.put()
-            data = {'home_name': home_name}
-            render.render_page_with_data(self, 'successfullyJoinedHome.html', 'Successfully Joined Home', data)
-            helpers.redirect(self, '/dashboard', 1000)
-        else:
-            # REPORT to client to try again. wrong name or password
-            data = {'error': 'You have entered an incorrect home name or password'}
-            render.render_page_without_header_with_data(self, 'joinHome.html', 'Error: Wrong Name or Password', data)
-
 
         ## TODO: redirect to create a calendar
-        
-
-
-
-
-class CreateCalendarHandler(webapp2.RequestHandler):
-    def get(self):
-        # Get current google account that is signed in
-        user = users.get_current_user()
-        # Check if there is a user signed in
-        if user:
-            person = login.is_roommate_account_initialized(user)
-            if person:
-                # Display Calendar
-                None
-#                cals = my_calendar.get_calender_list()
-#                data = {"cals": cals}
-#                render.render_page_with_data(self, 'createCalendar.html', 'Create a Schedule', data)
-            else:
-               helpers.redirect(self, '/',0)
-        # If there is no user, prompt client to login
-        else:
-            helpers.redirect(self, '/',0)
->>>>>>> origin/master
-
-
-
 class TemplateHandler(webapp2.RequestHandler):
     def get(self):
         # Get current google account that is signed in
@@ -526,7 +429,7 @@ class LeaveRoomHandler(webapp2.RequestHandler):
         if user:
             #Add mini-form to ask if stickies should be deleted, replace True with var name
             helpers.removeFromRoom(self, user, True) #Add confirmation for leaving room
-            helpers.redirect(self, '/create_home', 0)
+            helpers.redirect(self, '/newJoinHome', 0)
         else:
             helpers.redirect(self, '/', 0)
         
@@ -544,11 +447,10 @@ app = webapp2.WSGIApplication([
     ('/create_calendar', CreateCalendarHandler),
     ('/developer', DeveloperHandler),
     ('/settings', SettingsHandler),
-<<<<<<< HEAD
     ('/leaveRoom', LeaveRoomHandler),
-    ('/newJoinHome', CreateHomeHandler)
-=======
+    ('/newJoinHome', CreateHomeHandler),
     ('/create_a_chore', CreateChoreHandler),
-    ('/leaveRoom', LeaveRoomHandler)
->>>>>>> origin/master
+
+    ('/leaveRoom', LeaveRoomHandler),
+    ('/assign_bills',AssignBillHandler)
 ], debug=True)
