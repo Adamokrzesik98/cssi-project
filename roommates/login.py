@@ -36,6 +36,11 @@ def is_roommate_account_initialized(user):
                 return individual
     return None
 
+def is_in_room(self, person):
+    if person.home_key:
+        return True
+    return False
+
 
 # Renders page for current client to create a roommate account
 # Must pass in self when using  

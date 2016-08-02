@@ -1,0 +1,41 @@
+<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="resources/main.css" type="text/css">
+<link rel="stylesheet" href="resources/newHome.css" type="text/css">
+
+<div>
+	<h1>{{ error }}</h1>
+	<h1 class="centered_title">Welcome To Roomates</h1>
+	<div>
+		<div class="main_left">
+			<h4 class="subtitle" class="centered_title">Already have a Room to Join? Do it Here!</h4>	
+			<form action="/join_home" method="post">
+				<h5 class="type">Your Name: <input type="text" class="text_boxes" name="name"/></h5>
+	    		<h5 class="type">Phone Number: ( 
+	    			<input type="text" class="text_boxes" name="phone_number1" minlength="3" maxlength="3" size="3" /> ) 
+	    			<input type="text" class="text_boxes" name="phone_number2" minlength="3" maxlength="3" size="3"/> - 
+	    			<input type="text" class="text_boxes" name="phone_number3" minlength="4" maxlength="4" size="4"/>
+	    		</h5>
+	    		<h5 class="type">Home Name: <input type="text" class="text_boxes" name="home_name"/></h5>
+	    		<h5 class="type">Password: <input type="password" class="text_boxes" name="password"/></h5>
+	    		<input type="submit" value="Join This Room"/>
+	    	</form>
+		</div>
+
+
+		<div class="main_right">
+			<h4 class="subtitle" class="centered_title">Need to Create a Room? Do it Here!</h4>
+			<form action="/create_home" method="post">
+	    		<h5 class="type">Your Name: <input type="text" class="text_boxes" name="name_b"/></h5>
+	    		<h5 class="type">Phone Number: ( 
+	    			<input type="text" class="text_boxes" name="phone_number1_b" maxlength="3" size="3" /> ) 
+	    			<input type="text" class="text_boxes" name="phone_number2_b" maxlength="3" size="3"/> - 
+	    			<input type="text" class="text_boxes" name="phone_number3_b" maxlength="4" size="4"/>
+	    		</h5>
+	    		<h5 class="type">Home Name: <input type="text" class="text_boxes" name="home_name_b"/></h5>
+	    		<h5 class="type">Make a Password: <input type="password" class="text_boxes" name="password_b"/></h5>
+	    		<h5 class="type">Confirm Password: <input type="password" class="text_boxes"/></h5>
+	    		<input type="submit" value="Make New Room"/>
+	    	</form>
+		</div>
+	</div>
+</div>

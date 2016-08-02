@@ -46,7 +46,10 @@ import webapp2
 # Initialize Jinja Environment
 env = jinja2.Environment(loader= jinja2.FileSystemLoader('templates'))
 
-
+#Handler to test for Adam
+class AdamsTestHandler(webapp2.RequestHandler):
+    def get(self):
+        render.render_page_without_links_on_header(self, 'new_join_home.html', "Test")
 
 # Main Handler that either shows the login page, the create an account page, or the dashboard
 class MainHandler(webapp2.RequestHandler):
@@ -56,19 +59,141 @@ class MainHandler(webapp2.RequestHandler):
         # Check if there is a user signed in
         if user:
             # Check if user has an account set up
-            person = login.is_roommate_account_initialized(user)
-            if person:
-                home = Home.query().filter(Home.key == person.home_key).fetch()
-
-                # Render Dashboard
-                helpers.redirect(self, '/dashboard', 0)
+            person = login.is_roommate_account_initialized(user) #Change to check if in home
+            logging.info(person)
+            if person: 
+                if login.is_in_room(self, person):
+                    helpers.redirect(self, '/dashboard', 0)
             # Otherwise, prompt user to create account
+                else: 
+                    helpers.redirect(self, '/newJoinHome', 0) #/new_join_home
             else:
                 #redirect to create account page
-                helpers.redirect(self, '/create_account', 0)
+                helpers.redirect(self, '/newJoinHome', 0) #/new_join_home
         # If there is no user, prompt client to login
         else:
             login.render_login_page(self)
+
+
+class CreateHomeHandler(webapp2.RequestHandler): #Change to redirect for /new_join_home
+    def get(self):
+        # Get current google account that is signed in
+        user = users.get_current_user()
+        # Check if there is a user signed in
+        if user:
+            person = login.is_roommate_account_initialized(user)
+            if person:
+                if person.home_key:
+                    helpers.redirect(self, '/', 0)
+            render.render_page_without_header(self, 'newJoinHome.html', 'Join a Room')
+        # If there is no user, prompt client to login
+        else:
+            helpers.redirect(self, '/',0)
+
+    def post(self):
+        #retrieve data from form
+
+        name=self.request.get('name_b')
+        phone_number = int(self.request.get('phone_number1_b') + self.request.get('phone_number2_b') + self.request.get('phone_number3_b'))
+        #create new person object
+        user = users.get_current_user()
+        person = Person(name=name, phone_number = phone_number, user_id = user.user_id(), email_address = user.email())
+
+
+        home_name = self.request.get('home_name_b')
+        homes_with_same_name = Home.query().filter(Home.name == home_name).fetch()
+
+        if len(homes_with_same_name) > 0: #If home with same name already exists
+            data = {'error': 'This home name is already taken'}
+            render.render_page_with_data(self, 'newJoinHome.html', 'Error: Home Name Taken', data)
+        else:
+            password = self.request.get('password_b')
+
+            new_home = Home(name= home_name, password = password, occupants = [user.user_id()])
+            person.home_key = new_home.put()
+
+            person.put()
+                #redirect to create a calendar
+            helpers.redirect(self, '/dashboard',1000)
+
+
+
+
+
+
+
+class JoinHomeHandler(webapp2.RequestHandler):
+    # def get(self): #NOT NEEDED ANYMORE, ONLY POST
+    #     # Get current google account that is signed in
+    #     user = users.get_current_user()
+    #     # Check if there is a user signed in
+    #     if user:
+    #         person = login.is_roommate_account_initialized(user)
+    #         if person:
+    #             # Display create a Home page
+    #             render.render_page_without_header(self, 'joinHome.html', 'Join a Home')
+    #         else:
+    #            helpers.redirect(self, '/',0)
+    #     # If there is no user, prompt client to login
+    #     else:
+    #         helpers.redirect(self, '/',0)
+
+    def post(self):
+        
+        name = self.request.get('name')
+        phone_number = int(self.request.get('phone_number1') + self.request.get('phone_number2') + self.request.get('phone_number3'))
+        #create new person object
+        user = users.get_current_user()
+        person = Person(name=name, phone_number = phone_number, user_id = user.user_id(), email_address = user.email())
+
+
+
+
+        #retrieve data from form
+        home_name = self.request.get('home_name')
+        password = self.request.get('password')
+        # Query for home object
+        potential_home = Home.query().filter(Home.name == home_name, Home.password == password).fetch()
+        if potential_home:
+            potential_home[0].occupants.append(user.user_id())
+            home_key = potential_home[0].put()
+            person.put()
+            person.home_key = home_key
+            person.put()
+            data = {'home_name': home_name}
+            render.render_page_with_data(self, 'successfullyJoinedHome.html', 'Successfully Joined Home', data)
+            helpers.redirect(self, '/dashboard', 1000)
+        else:
+            # REPORT to client to try again. wrong name or password
+            data = {'error': 'You have entered an incorrect home name or password'}
+            render.render_page_with_data(self, 'newJoinHome.html', 'Error: Wrong Name or Password', data)
+
+
+        ## TODO: redirect to create a calendar
+        
+
+
+
+
+class CreateCalendarHandler(webapp2.RequestHandler):
+    def get(self):
+        # Get current google account that is signed in
+        user = users.get_current_user()
+        # Check if there is a user signed in
+        if user:
+            person = login.is_roommate_account_initialized(user)
+            if person:
+                # Display Calendar
+                None
+#                cals = my_calendar.get_calender_list()
+#                data = {"cals": cals}
+#                render.render_page_with_data(self, 'createCalendar.html', 'Create a Schedule', data)
+            else:
+               helpers.redirect(self, '/',0)
+        # If there is no user, prompt client to login
+        else:
+            helpers.redirect(self, '/',0)
+
 
 
 
@@ -173,116 +298,8 @@ class DeleteStickyHandler(webapp2.RequestHandler):
 
 
 
-class CreateAccountHandler(webapp2.RequestHandler):
-    def get(self):
-        login.initialize_roommate_account(self)
-
-    def post(self):
-        #retrieve data from form
-        name = self.request.get('name')
-        phone_number = int(self.request.get('phone_number1') + self.request.get('phone_number2') + self.request.get('phone_number3'))
-        #create new person object
-        user = users.get_current_user()
-        person = Person(name= name, phone_number = phone_number, user_id = user.user_id(), email_address = user.email())
-        person.put()
-        #redirect to join or create a home page
-        helpers.redirect(self, '/create_home', 500)
 
 
-
-class CreateHomeHandler(webapp2.RequestHandler):
-    def get(self):
-        # Get current google account that is signed in
-        user = users.get_current_user()
-        # Check if there is a user signed in
-        if user:
-            person = login.is_roommate_account_initialized(user)
-            if person:
-                # Display create a Home page
-                render.render_page_without_header(self, 'createHome.html', 'Create a Home')
-            else:
-               helpers.redirect(self, '/',0)
-        # If there is no user, prompt client to login
-        else:
-            helpers.redirect(self, '/',0)
-
-    def post(self):
-        #retrieve data from form
-        home_name = self.request.get('name')
-        password = self.request.get('password')
-        #create new person object
-        user = users.get_current_user()
-        person = login.is_roommate_account_initialized(user)
-        new_home = Home(name= home_name, password = password, occupants = [user.user_id()])
-        person.home_key = new_home.put()
-        person.put()
-        #redirect to create a calendar
-        helpers.redirect(self, '/dashboard',1000)
-
-
-
-class JoinHomeHandler(webapp2.RequestHandler):
-    def get(self):
-        # Get current google account that is signed in
-        user = users.get_current_user()
-        # Check if there is a user signed in
-        if user:
-            person = login.is_roommate_account_initialized(user)
-            if person:
-                # Display create a Home page
-                render.render_page_without_header(self, 'joinHome.html', 'Join a Home')
-            else:
-               helpers.redirect(self, '/',0)
-        # If there is no user, prompt client to login
-        else:
-            helpers.redirect(self, '/',0)
-
-    def post(self):
-        user = users.get_current_user()
-        person = login.is_roommate_account_initialized(user)
-        #retrieve data from form
-        home_name = self.request.get('name')
-        password = self.request.get('password')
-        # Query for home object
-        potential_home = Home.query().filter(Home.name == home_name, Home.password == password).fetch()
-        if potential_home:
-            potential_home[0].occupants.append(user.user_id())
-            home_key = potential_home[0].put()
-            person.home_key = home_key
-            person.put()
-            data = {'home_name': home_name}
-            render.render_page_with_data(self, 'successfullyJoinedHome.html', 'Successfully Joined Home', data)
-            helpers.redirect(self, '/dashboard', 1000)
-        else:
-            # REPORT to client to try again. wrong name or password
-            data = {'error': 'You have entered an incorrect home name or password'}
-            render.render_page_with_data(self, 'joinHome.html', 'Error: Wrong Name or Password', data)
-
-
-        ## TODO: redirect to create a calendar
-        
-
-
-
-
-class CreateCalendarHandler(webapp2.RequestHandler):
-    def get(self):
-        # Get current google account that is signed in
-        user = users.get_current_user()
-        # Check if there is a user signed in
-        if user:
-            person = login.is_roommate_account_initialized(user)
-            if person:
-                # Display Calendar
-                None
-#                cals = my_calendar.get_calender_list()
-#                data = {"cals": cals}
-#                render.render_page_with_data(self, 'createCalendar.html', 'Create a Schedule', data)
-            else:
-               helpers.redirect(self, '/',0)
-        # If there is no user, prompt client to login
-        else:
-            helpers.redirect(self, '/',0)
 
 
 
@@ -342,11 +359,12 @@ app = webapp2.WSGIApplication([
     ('/create_sticky', CreateStickyHandler),
     ('/dashboard', DashboardHandler),
     ('/delete_sticky', DeleteStickyHandler),
-    ('/create_account', CreateAccountHandler),
+    # ('/create_account', CreateAccountHandler),
     ('/create_home', CreateHomeHandler),
     ('/join_home', JoinHomeHandler),
     ('/create_calendar', CreateCalendarHandler),
     ('/developer', DeveloperHandler),
     ('/settings', SettingsHandler),
-    ('/leaveRoom', LeaveRoomHandler)
+    ('/leaveRoom', LeaveRoomHandler),
+    ('/newJoinHome', CreateHomeHandler)
 ], debug=True)
