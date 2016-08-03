@@ -65,6 +65,8 @@
 									
 									{% if chore.workers_names[chore.index] == person.name %}
 									<div class="dropdown">
+									{% endif %}
+									{% if chore.completed == True %}
 									<div class="chore_completed_item">{{chore.chore_name}}</div>
 									<div class="worker_completed_item">{{chore.workers_names[chore.index]}}</div>
 									{% else %}

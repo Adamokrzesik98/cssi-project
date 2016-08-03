@@ -6,12 +6,11 @@ from sticky import Sticky
 from chores import Chore
 from bills import Bills
 from google.appengine.api import users
+from google.appengine.api import app_identity
+from google.appengine.api import mail
 import time
 import logging
 
-
-#For email send
-from google.appengine.api import mail
 
 
 # redirect current page to address
@@ -81,12 +80,16 @@ def dndEnabled(self, enabler):
 			sendEmail(person.user_id, enabler.email, 'Do Not Disturb Enabled', email_content)
 
 
-def sendEmail(self, to, email_sender, email_subject, message_content):
-	message = mail.EmailMessage(sender=email_sender,
-							subject=email_subject)
-	message.to = to
-	message.body = message_content
-	message.send()
+def send_dnd_mail(sender_address, name, receipient_address):
+    # [START send_message]
+    message = mail.EmailMessage(
+        sender=sender_address,
+        subject= "ALERT: " + name + " has turned on Do Not Disturb")
+
+    message.to = receipient_address
+    message.body = "ALERT: " + name + " has turned on Do Not Disturb.  From, your friends at Roommates"
+    message.send()
+    # [END send_message]
 
 def removeFromRoom(self, user):
 	person = login.is_roommate_account_initialized(user)

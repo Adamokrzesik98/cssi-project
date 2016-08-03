@@ -34,6 +34,7 @@ import logging
 
 # Outside libraries
 from google.appengine.api import users
+from google.appengine.api import app_identity
 import jinja2
 import os
 import time
@@ -46,11 +47,6 @@ import webapp2
 
 # Initialize Jinja Environment
 env = jinja2.Environment(loader= jinja2.FileSystemLoader('templates'))
-
-#Handler to test for Adam
-class AdamsTestHandler(webapp2.RequestHandler):
-	def get(self):
-		render.render_page_without_links_on_header(self, 'new_join_home.html', "Test")
 
 # Main Handler that either shows the login page, the create an account page, or the dashboard
 class MainHandler(webapp2.RequestHandler):
@@ -341,6 +337,18 @@ class DoNotDisturbHandler(webapp2.RequestHandler):
 					person.do_not_disturb = True
 					data = {'dnd_state' : 'DO NOT DISTURB!'}
 					person.put()
+					sender_address = 'Roommates <doug.smith3197@gmail.com>'
+					occupants = Home.query().filter(Home.key == person.home_key).fetch()[0].occupants
+					for occupant in occupants:
+						logging.info(occupant)
+						if occupant == person.user_id:
+							None
+						else:
+							receipient = Person.query().filter(Person.user_id == occupant).fetch()[0]
+							receipient = receipient.email_address
+							helpers.send_dnd_mail(sender_address, person.name, receipient)
+
+					self.response.write("<br><br><br><br><br>email sent")
 				render.render_page_with_data(self, 'doNotDisturb.html', "Do Not Disturb Toggle", data)
 				helpers.redirect(self, '/dashboard', 1000)
 			else:
@@ -378,55 +386,55 @@ class CheckInOutHandler(webapp2.RequestHandler):
 
 class DeleteStickyHandler(webapp2.RequestHandler):
 
-    def post(self): 
-        user = users.get_current_user()
-        if user:
-            person = login.is_roommate_account_initialized(user)
-            sticky_title = self.request.get('sticky_title')
-            sticky_content = self.request.get('sticky_content')
-            sticky = Sticky.query().filter(Sticky.content==sticky_content, Sticky.title==sticky_title, Sticky.author == person.user_id).fetch()
-            sticky = sticky[0]
-            sticky.key.delete()
-        render.render_page(self, "stickyDeleted.html", "Sticky Deleted!")
-        helpers.redirect(self, '/dashboard', 1000)
+	def post(self): 
+		user = users.get_current_user()
+		if user:
+			person = login.is_roommate_account_initialized(user)
+			sticky_title = self.request.get('sticky_title')
+			sticky_content = self.request.get('sticky_content')
+			sticky = Sticky.query().filter(Sticky.content==sticky_content, Sticky.title==sticky_title, Sticky.author == person.user_id).fetch()
+			sticky = sticky[0]
+			sticky.key.delete()
+		render.render_page(self, "stickyDeleted.html", "Sticky Deleted!")
+		helpers.redirect(self, '/dashboard', 1000)
 
 
 class ToggleStickyCompletedHandler(webapp2.RequestHandler):
-    def post(self): 
-        user = users.get_current_user()
-        if user:
-            person = login.is_roommate_account_initialized(user)
-            sticky_title = self.request.get('sticky_title')
-            sticky_content = self.request.get('sticky_content')
-            sticky = Sticky.query().filter(Sticky.content==sticky_content, Sticky.title==sticky_title).fetch()
-            sticky = sticky[0]
-            if sticky.completed:
-                sticky.completed = False
-            else:
-                sticky.completed = True
-            sticky.put()
-        render.render_page(self, "stickyToggle.html", "Sticky Completed Toggled")
-        helpers.redirect(self, '/dashboard', 1000)
+	def post(self): 
+		user = users.get_current_user()
+		if user:
+			person = login.is_roommate_account_initialized(user)
+			sticky_title = self.request.get('sticky_title')
+			sticky_content = self.request.get('sticky_content')
+			sticky = Sticky.query().filter(Sticky.content==sticky_content, Sticky.title==sticky_title).fetch()
+			sticky = sticky[0]
+			if sticky.completed:
+				sticky.completed = False
+			else:
+				sticky.completed = True
+			sticky.put()
+		render.render_page(self, "stickyToggle.html", "Sticky Completed Toggled")
+		helpers.redirect(self, '/dashboard', 1000)
 
 
 
 class CompleteChoreHandler(webapp2.RequestHandler):
-    def post(self):
-        user = users.get_current_user()
-        if user:
-            person = login.is_roommate_account_initialized(user)
-            chore_home_key = person.home_key
-            chore_name = self.request.get('chore_name')
-            chore_end_time = float(self.request.get('chore_end_time'))
-            chore = Chore.query().filter(Chore.chore_name==chore_name, Chore.home_key==chore_home_key).fetch()
-            chore = chore[0]
-            if chore.completed:
-                chore.completed = False
-            else:
-                chore.completed = True
-            chore.put()
-        render.render_page(self, "choreCompleted.html", "Chore Completed")
-        helpers.redirect(self, '/dashboard', 1000)
+	def post(self):
+		user = users.get_current_user()
+		if user:
+			person = login.is_roommate_account_initialized(user)
+			chore_home_key = person.home_key
+			chore_name = self.request.get('chore_name')
+			chore_end_time = float(self.request.get('chore_end_time'))
+			chore = Chore.query().filter(Chore.chore_name==chore_name, Chore.home_key==chore_home_key).fetch()
+			chore = chore[0]
+			if chore.completed:
+				chore.completed = False
+			else:
+				chore.completed = True
+			chore.put()
+		render.render_page(self, "choreCompleted.html", "Chore Completed")
+		helpers.redirect(self, '/dashboard', 1000)
 
 
 
@@ -485,24 +493,24 @@ class LeaveRoomHandler(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
 
-    ('/', MainHandler),
-    ('/do_not_disturb', DoNotDisturbHandler),
-    ('/check_in_out', CheckInOutHandler),
-    ('/create_sticky', CreateStickyHandler),
-    ('/dashboard', DashboardHandler),
-    ('/delete_sticky', DeleteStickyHandler),
-    # ('/create_account', CreateAccountHandler),
-    ('/create_home', CreateHomeHandler),
-    ('/join_home', JoinHomeHandler),
-    ('/create_calendar', CreateCalendarHandler),
-    ('/developer', DeveloperHandler),
-    ('/settings', SettingsHandler),
-    ('/leaveRoom', LeaveRoomHandler),
-    ('/newJoinHome', CreateHomeHandler),
-    ('/create_a_chore', CreateChoreHandler),
-    ('/complete_sticky', ToggleStickyCompletedHandler),
-    ('/complete_chore', CompleteChoreHandler),
-    ('/leaveRoom', LeaveRoomHandler),
-    ('/assign_bills',AssignBillHandler)
+	('/', MainHandler),
+	('/do_not_disturb', DoNotDisturbHandler),
+	('/check_in_out', CheckInOutHandler),
+	('/create_sticky', CreateStickyHandler),
+	('/dashboard', DashboardHandler),
+	('/delete_sticky', DeleteStickyHandler),
+	# ('/create_account', CreateAccountHandler),
+	('/create_home', CreateHomeHandler),
+	('/join_home', JoinHomeHandler),
+	('/create_calendar', CreateCalendarHandler),
+	('/developer', DeveloperHandler),
+	('/settings', SettingsHandler),
+	('/leaveRoom', LeaveRoomHandler),
+	('/newJoinHome', CreateHomeHandler),
+	('/create_a_chore', CreateChoreHandler),
+	('/complete_sticky', ToggleStickyCompletedHandler),
+	('/complete_chore', CompleteChoreHandler),
+	('/leaveRoom', LeaveRoomHandler),
+	('/assign_bills',AssignBillHandler)
 
 ], debug=True)
