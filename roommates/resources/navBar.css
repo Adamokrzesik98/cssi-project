@@ -11,10 +11,12 @@
 	margin: auto;
 	z-index: 99999;	
 }
+
 #title a{
 	text-decoration: none;
 	color: #CAE9FF;
 }
+
 #navPic{
 	position: fixed;
 	top: 5px;
@@ -43,7 +45,8 @@
 	position: fixed;
 	top: 0;
 	left: 0;
-	height: 70px;
+	height: 170px;
+	margin-top: -100px;
 	width: 100%;
 	background-color: #1B4965;
 	z-index: 99990;
