@@ -157,7 +157,7 @@
   }
 }
 
-.pulse {
+#pulse {
   -webkit-animation-name: pulse;
   animation-name: pulse;
 }
