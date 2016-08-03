@@ -341,18 +341,15 @@ class DoNotDisturbHandler(webapp2.RequestHandler):
 					person.do_not_disturb = True
 					data = {'dnd_state' : 'DO NOT DISTURB!'}
 					person.put()
-					sender_address = 'Roommates <doug.smith3197@gmail.com>'
+					sender_address = 'Roommates <do.not.disturb.roommates@gmail.com>'
 					occupants = Home.query().filter(Home.key == person.home_key).fetch()[0].occupants
 					for occupant in occupants:
-						logging.info(occupant)
-						if occupant == person.user_id:
-							None
+						receipient = Person.query().filter(Person.user_id == occupant).fetch()[0]
+						receipient = receipient.email_address
+						if receipient == person.email_address:
+							logging.info(occupant)
 						else:
-							receipient = Person.query().filter(Person.user_id == occupant).fetch()[0]
-							receipient = receipient.email_address
 							helpers.send_dnd_mail(sender_address, person.name, receipient)
-
-					self.response.write("<br><br><br><br><br>email sent")
 				render.render_page_with_data(self, 'doNotDisturb.html', "Do Not Disturb Toggle", data)
 				helpers.redirect(self, '/dashboard', 1000)
 			else:
