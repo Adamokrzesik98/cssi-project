@@ -227,6 +227,8 @@
 	margin-bottom: 5%;
 }
 #cal_frame{
+	position: relative;
+	margin: auto;
 	float: left;
 	width: 100%;
 	border: 10px solid #1B4965;
