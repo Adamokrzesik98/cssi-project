@@ -491,8 +491,9 @@ class CreateCalendarHandler(webapp2.RequestHandler):
 				# Get the authorized Http object created by the decorator.
 				http = decorator.http()
 				# Call the service using the authorized Http object.
-				request = service.events().list(calendarId='primary')
+				request = service.calendarList().get(calendarId='calendarId').execute()
 				response = request.execute(http=http)
+				self.response.write(response['summary'])
 			else:
 			   helpers.redirect(self, '/',0)
 		# If there is no user, prompt client to login
