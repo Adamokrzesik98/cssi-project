@@ -34,8 +34,8 @@
 	overflow: hidden;
 	position: fixed;
 	top: 20px;
-	left: 42%;
-	width: 58%;
+	left: 35%;
+	width: 65%;
 	height: 45px;
 	z-index: 99997;
 }
@@ -48,6 +48,18 @@
 	background-color: #1B4965;
 	z-index: 99990;
 }
+
+li a img{
+	height: 30px;
+	width: 30px;
+	margin-top: -5px;
+}
+
+#gearLink {
+	height: 30px;
+	width: 30px;
+}
+
 li a{
 	display: block;
 	color: #CAE9FF;

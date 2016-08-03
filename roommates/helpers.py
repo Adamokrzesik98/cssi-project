@@ -115,13 +115,12 @@ def removeFromRoom(self, user):
 			for b in bills:
 				b.key.delete()
 			home.key.delete()
-		else: #BILLS AND CHORES NOT YET FUNCTIONAL, WILL THROW FATAL ERROR
-			# for c in chores:
-			# 	c.workers_names.remove(person)
-
-			# for b in bills:
-			# 	if b.payer_name == person:
-			# 		b.key.delete()
+		else: #Creo que esto funcione
+			for c in chores:
+				c.workers.remove(person.user_id)
+			for b in bills:
+				if b.payer_id == person.user_id:
+					b.key.delete()
 			home.put()
 		#Find stickies associated with person
 		stickies = Sticky.query().filter(Sticky.author == person.user_id)

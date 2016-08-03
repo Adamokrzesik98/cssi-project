@@ -475,6 +475,7 @@ class LeaveRoomHandler(webapp2.RequestHandler):
 			try:
 				#Add mini-form to ask if stickies should be deleted, replace True with var name
 				helpers.removeFromRoom(self, user) #Add confirmation for leaving room
+				logging.info("No Exception Thrown")
 			except AttributeError:
 				logging.info("AttributeError thrown")
 			helpers.redirect(self, '/newJoinHome', 0)
