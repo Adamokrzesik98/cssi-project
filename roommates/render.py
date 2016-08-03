@@ -22,6 +22,15 @@ def render_page_with_data(self, page_html, page_title, data):
     footer = env.get_template('footer.html')
     self.response.write(footer.render())
 
+def render_page_with_data_no_header(self, page_html, page_title, data):
+    
+    # Render page contents
+    page = env.get_template(page_html)
+    self.response.write(page.render(data))
+    # Render footer
+    footer = env.get_template('footer.html')
+    self.response.write(footer.render())
+
 
 # Takes a html template and page title to render page
 # Must pass self in as an argument

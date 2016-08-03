@@ -39,3 +39,7 @@ form input[type=submit]{
 	float: right;
 	width: 30%
 }
+
+#noWorriesBouThisErrorGettinInDaWay {
+	position: absolute;
+}

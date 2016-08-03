@@ -99,10 +99,14 @@ class CreateHomeHandler(webapp2.RequestHandler): #Change to redirect for /new_jo
 
 		home_name = self.request.get('home_name_b')
 		homes_with_same_name = Home.query().filter(Home.name == home_name).fetch()
-
+		logging.info(self.request.get('password_a'))
+		logging.info(self.request.get('password_b'))
 		if len(homes_with_same_name) > 0: #If home with same name already exists
 			data = {'error': 'This home name is already taken'}
-			render.render_page_with_data(self, 'newJoinHome.html', 'Error: Home Name Taken', data)
+			render.render_page_with_data_no_header(self, 'newJoinHome.html', 'Error: Home Name Taken', data)
+		elif not (self.request.get('password_b') == self.request.get('password_a')):
+			data = {'error' : 'Error: Passwords do not match'}
+			render.render_page_with_data_no_header(self, 'newJoinHome.html', 'Join a Room', data)
 		else:
 			password = self.request.get('password_b')
 
@@ -163,7 +167,7 @@ class JoinHomeHandler(webapp2.RequestHandler):
 		else:
 			# REPORT to client to try again. wrong name or password
 			data = {'error': 'You have entered an incorrect home name or password'}
-			render.render_page_with_data(self, 'newJoinHome.html', 'Error: Wrong Name or Password', data)
+			render.render_page_with_data_no_header(self, 'newJoinHome.html', 'Error: Wrong Name or Password', data)
 
 
 		## TODO: redirect to create a calendar
