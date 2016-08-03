@@ -251,6 +251,8 @@ class CreateStickyHandler(webapp2.RequestHandler):
             render.render_page(self, 'stickyCreated.html', "Sticky Created")
             helpers.redirect(self, '/dashboard', 1000)
 
+
+
 class AssignBillHandler(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
@@ -376,13 +378,33 @@ class CheckInOutHandler(webapp2.RequestHandler):
 
 class DeleteStickyHandler(webapp2.RequestHandler):
     def post(self): 
-        None
-#        sticky_expir = float(self.request.get('sticky_expir').replace("u'","").replace("'",""))
-#        sticky = Sticky.query().filter(Sticky.expiration==sticky_expir).fetch()[0]
-#        sticky.key.delete()
-#        helpers.redirect(self, '/dashboard', 1000)
+        user = users.get_current_user()
+        if user:
+            person = login.is_roommate_account_initialized(user)
+            sticky_title = self.request.get('sticky_title')
+            sticky_content = self.request.get('sticky_content')
+            sticky = Sticky.query().filter(Sticky.content==sticky_content, Sticky.title==sticky_title, Sticky.author == person.user_id).fetch()
+            sticky = sticky[0]
+            sticky.key.delete()
+        render.render_page(self, "stickyDeleted.html", "Sticky Deleted!")
+        helpers.redirect(self, '/dashboard', 1000)
 
-
+class ToggleStickyCompletedHandler(webapp2.RequestHandler):
+    def post(self): 
+        user = users.get_current_user()
+        if user:
+            person = login.is_roommate_account_initialized(user)
+            sticky_title = self.request.get('sticky_title')
+            sticky_content = self.request.get('sticky_content')
+            sticky = Sticky.query().filter(Sticky.content==sticky_content, Sticky.title==sticky_title).fetch()
+            sticky = sticky[0]
+            if sticky.completed:
+                sticky.completed = False
+            else:
+                sticky.completed = True
+            sticky.put()
+        render.render_page(self, "stickyToggle.html", "Sticky Completed Toggled")
+        helpers.redirect(self, '/dashboard', 1000)
 
 
         ## TODO: redirect to create a calendar
@@ -451,7 +473,7 @@ app = webapp2.WSGIApplication([
     ('/leaveRoom', LeaveRoomHandler),
     ('/newJoinHome', CreateHomeHandler),
     ('/create_a_chore', CreateChoreHandler),
-
+    ('/complete_sticky', ToggleStickyCompletedHandler),
     ('/leaveRoom', LeaveRoomHandler),
     ('/assign_bills',AssignBillHandler)
 ], debug=True)

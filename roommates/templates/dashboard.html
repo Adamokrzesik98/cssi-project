@@ -30,15 +30,22 @@
 						{% if home_stickies: %}
 							{% for sticky in home_stickies: %}
 								<div class="dropdown">
-									<div class="sticky_item">{{sticky.title}} : {{sticky.content}} <br>Created on: {{sticky.time_created}}</div>
+									{% if sticky.completed == True %} 
+									<div class="sticky_completed_item">
+									{% else %}
+									<div class="sticky_item">
+									{% endif %}
+									{{sticky.title}} : {{sticky.content}} <br>Created on: {{sticky.time_created}}</div>
 									<div class="dropdown_content">
 										<form action="/complete_sticky" method="post">
-											<input hidden name='sticky_expir' value={{ sticky.expiration }}>
-											<input type="submit" value="Mark As Complete">
+											<input hidden name='sticky_title' value="{{ sticky.title }}">
+											<input hidden name='sticky_content' value="{{ sticky.content }}">
+											<input type="submit" value="Toggled Completed">
 										</form>
 										{% if sticky.author == person.user_id %}
 										<form action="/delete_sticky" method="post">
-											<input hidden name='sticky_expir' value={{ sticky.expiration }}>
+											<input hidden name='sticky_title' value="{{ sticky.title }}">
+											<input hidden name='sticky_content' value="{{ sticky.content }}">
 											<input type="submit" value="Delete Sticky">
 										</form>
 										{% endif %}

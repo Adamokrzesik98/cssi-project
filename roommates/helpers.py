@@ -112,4 +112,16 @@ def removeFromRoom(self, user, destroy_stickies):
 	home.put()
 
 
+def sendSMS(to, message):
+    # replace with your credentials from: https://www.twilio.com/user/account
+    account_sid = "SK205e8dc6c1bcdc8d8f1f1cffd7bc79e9"
+    auth_token = "BPEfbiNoBLcGJqmix1G2xGrkAFT175ei"
+    client = TwilioRestClient(account_sid, auth_token)
+    # replace "to" and "from_" with real numbers
+    rv = client.messages.create(to="+1" + to,
+                                from_="+16304493710",
+                                body=message)
+    self.response.write(str(rv))
+
+
 
