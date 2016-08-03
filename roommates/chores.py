@@ -6,5 +6,6 @@ class Chore(ndb.Model):
 	workers_names = ndb.StringProperty(repeated = True)
 	index = ndb.IntegerProperty(default= 0)
 	end_time = ndb.FloatProperty(required=True)
-	duration = ndb.FloatProperty(required=True) 
+	duration = ndb.FloatProperty(required=True)
+	completed = ndb.BooleanProperty(default=False) 
 	home_key = ndb.KeyProperty(kind = 'Home')

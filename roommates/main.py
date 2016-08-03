@@ -409,7 +409,31 @@ class ToggleStickyCompletedHandler(webapp2.RequestHandler):
         helpers.redirect(self, '/dashboard', 1000)
 
 
+<<<<<<< Updated upstream
 		## TODO: redirect to create a calendar
+=======
+
+class CompleteChoreHandler(webapp2.RequestHandler):
+    def post(self):
+        user = users.get_current_user()
+        if user:
+            person = login.is_roommate_account_initialized(user)
+            chore_home_key = person.home_key
+            chore_name = self.request.get('chore_name')
+            chore_end_time = float(self.request.get('chore_end_time'))
+            chore = Chore.query().filter(Chore.chore_name==chore_name, Chore.home_key==chore_home_key).fetch()
+            chore = chore[0]
+            if chore.completed:
+                chore.completed = False
+            else:
+                chore.completed = True
+            chore.put()
+        render.render_page(self, "choreCompleted.html", "Chore Completed")
+        helpers.redirect(self, '/dashboard', 1000)
+
+
+
+>>>>>>> Stashed changes
 class TemplateHandler(webapp2.RequestHandler):
 	def get(self):
 		# Get current google account that is signed in
@@ -480,6 +504,7 @@ app = webapp2.WSGIApplication([
     ('/newJoinHome', CreateHomeHandler),
     ('/create_a_chore', CreateChoreHandler),
     ('/complete_sticky', ToggleStickyCompletedHandler),
+    ('/complete_chore', CompleteChoreHandler),
     ('/leaveRoom', LeaveRoomHandler),
     ('/assign_bills',AssignBillHandler)
 

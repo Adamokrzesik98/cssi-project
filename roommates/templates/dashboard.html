@@ -39,7 +39,7 @@
 										<form action="/complete_sticky" method="post">
 											<input hidden name='sticky_title' value="{{ sticky.title }}">
 											<input hidden name='sticky_content' value="{{ sticky.content }}">
-											<input type="submit" value="Toggled Completed">
+											<input type="submit" value="Toggle Completed">
 										</form>
 										{% if sticky.author == person.user_id %}
 										<form action="/delete_sticky" method="post">
@@ -62,8 +62,27 @@
 						{% if chores: %}
 							<div class="name_box">
 								{% for chore in chores: %}
+									
+									{% if chore.workers_names[chore.index] == person.name %}
+									<div class="dropdown">
+									<div class="chore_completed_item">{{chore.chore_name}}</div>
+									<div class="worker_completed_item">{{chore.workers_names[chore.index]}}</div>
+									{% else %}
 									<div class="chore_item">{{chore.chore_name}}</div>
 									<div class="worker_item">{{chore.workers_names[chore.index]}}</div>
+									{% endif %}
+									<div class="dropdown_content">
+										{% if chore.workers[chore.index] == person.user_id %}
+										<form action="/complete_chore" method="post">
+											<input hidden name='chore_name' value="{{ chore.chore_name }}">
+											<input hidden name='chore_end_time' value="{{ chore.end_time }}">
+											<input type="submit" value="Mark as Completed">
+										</form>
+										{% endif %}
+									</div>
+									{% if chore.workers_names[chore.index] == person.name %}
+									</div>
+									{% endif %}
 								{% endfor %}
 							</div>
 						{% else %}
