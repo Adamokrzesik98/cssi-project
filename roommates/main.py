@@ -409,9 +409,6 @@ class ToggleStickyCompletedHandler(webapp2.RequestHandler):
         helpers.redirect(self, '/dashboard', 1000)
 
 
-<<<<<<< Updated upstream
-		## TODO: redirect to create a calendar
-=======
 
 class CompleteChoreHandler(webapp2.RequestHandler):
     def post(self):
@@ -433,7 +430,6 @@ class CompleteChoreHandler(webapp2.RequestHandler):
 
 
 
->>>>>>> Stashed changes
 class TemplateHandler(webapp2.RequestHandler):
 	def get(self):
 		# Get current google account that is signed in

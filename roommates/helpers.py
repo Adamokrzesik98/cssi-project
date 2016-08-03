@@ -23,51 +23,6 @@ def redirect(self, address, wait_time):
 #Takes input as a person
 #Returns a dictionary of DND status, current stickies, and people checked in
 def getDashData(self, person):
-<<<<<<< Updated upstream
-		if person:
-			home = Home.query().filter(Home.key == person.home_key).fetch()
-			dnd_state = False
-			home_stickies = []
-			checked_in = []
-			checked_out = []
-			people_in_home = []
-			has_dnd_on = []
-			for id in home[0].occupants:
-				people_in_home.append(Person.query().filter(id == Person.user_id).fetch()[0])
-			for p in people_in_home:
-				if p.location:
-					checked_in.append(p)
-				else:
-					checked_out.append(p)
-				if p.do_not_disturb:
-					has_dnd_on.append(p)
-			# Check for and delete expired sticky notes
-			for sticky_note in Sticky.query().filter(Sticky.home_key == person.home_key).fetch():
-				if sticky_note.expiration < time.time():
-					sticky_note.key.delete()
-				else:
-					home_stickies.append(sticky_note)
-			# fetch chores
-			chores = Chore.query().filter(Chore.home_key==home[0].key).fetch()
-			# update chores
-			for chore in chores:
-				if chore.end_time < time.time():
-					chore.end_time = chore.end_time + chore.duration
-					chore.index = (chore.index + 1)%len(chore.workers)
-					chore.put()
-			# fetch bills
-			bills = Bills.query().filter(Bills.home_key==home[0].key).fetch()
-
-
-			# fetch room name
-			room_name = home[0].name
-
-			# for person in people_in_home:
-			#   logging.info(person.name)
-
-			return_data = {'room_name': room_name, 'bills': bills, 'chores': chores, 'checked_in' : checked_in, 'checked_out' : checked_out, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies, 'person': person}
-			return return_data
-=======
         if person:
             home = Home.query().filter(Home.key == person.home_key).fetch()
             dnd_state = False
@@ -112,7 +67,6 @@ def getDashData(self, person):
 
             return_data = {'room_name': room_name, 'bills': bills, 'chores': chores, 'checked_in' : checked_in, 'checked_out' : checked_out, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies, 'person': person}
             return return_data
->>>>>>> Stashed changes
 
 
 #Currently Unused
