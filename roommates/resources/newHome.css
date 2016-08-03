@@ -30,7 +30,7 @@ form input[type=submit]{
 	position: fixed;
 	top: 16%;
 	left: 48%;
-	width: 5%;
-	height: 10%;
+	width: 60px;
+	height: auto;
 	z-index: 99997;
 }
