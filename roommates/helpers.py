@@ -5,6 +5,7 @@ from person import Person
 from sticky import Sticky
 from chores import Chore
 from bills import Bills
+from google.appengine.api import users
 import time
 import logging
 
@@ -15,101 +16,125 @@ from google.appengine.api import mail
 
 # redirect current page to address
 def redirect(self, address, wait_time):
-    data = {'url': address}
-    self.response.write('<script> setTimeout(function() {window.location = "' + address + '"},' + str(wait_time) + ');</script>')
+	data = {'url': address}
+	self.response.write('<script> setTimeout(function() {window.location = "' + address + '"},' + str(wait_time) + ');</script>')
 
 
 #Takes input as a person
 #Returns a dictionary of DND status, current stickies, and people checked in
 def getDashData(self, person):
-        if person:
-            home = Home.query().filter(Home.key == person.home_key).fetch()
-            dnd_state = False
-            home_stickies = []
-            checked_in = []
-            checked_out = []
-            people_in_home = []
-            has_dnd_on = []
-            for id in home[0].occupants:
-                people_in_home.append(Person.query().filter(id == Person.user_id).fetch()[0])
-            for p in people_in_home:
-                if p.location:
-                    checked_in.append(p)
-                else:
-                    checked_out.append(p)
-                if p.do_not_disturb:
-                    has_dnd_on.append(p)
-            # Check for and delete expired sticky notes
-            for sticky_note in Sticky.query().filter(Sticky.home_key == person.home_key).fetch():
-                if sticky_note.expiration < time.time():
-                    sticky_note.key.delete()
-                else:
-                    home_stickies.append(sticky_note)
-            # fetch chores
-            chores = Chore.query().filter(Chore.home_key==home[0].key).fetch()
-            # update chores
-            for chore in chores:
-                if chore.end_time < time.time():
-                    chore.end_time = chore.end_time + chore.duration
-                    chore.index = (chore.index + 1)%len(chore.workers)
-                    chore.put()
-            # fetch bills
-            bills = Bills.query().filter(Bills.home_key==home[0].key).fetch()
+		if person:
+			home = Home.query().filter(Home.key == person.home_key).fetch()
+			dnd_state = False
+			home_stickies = []
+			checked_in = []
+			checked_out = []
+			people_in_home = []
+			has_dnd_on = []
+			for id in home[0].occupants:
+				people_in_home.append(Person.query().filter(id == Person.user_id).fetch()[0])
+			for p in people_in_home:
+				if p.location:
+					checked_in.append(p)
+				else:
+					checked_out.append(p)
+				if p.do_not_disturb:
+					has_dnd_on.append(p)
+			# Check for and delete expired sticky notes
+			for sticky_note in Sticky.query().filter(Sticky.home_key == person.home_key).fetch():
+				if sticky_note.expiration < time.time():
+					sticky_note.key.delete()
+				else:
+					home_stickies.append(sticky_note)
+			# fetch chores
+			chores = Chore.query().filter(Chore.home_key==home[0].key).fetch()
+			# update chores
+			for chore in chores:
+				if chore.end_time < time.time():
+					chore.end_time = chore.end_time + chore.duration
+					chore.index = (chore.index + 1)%len(chore.workers)
+					chore.put()
+			# fetch bills
+			bills = Bills.query().filter(Bills.home_key==home[0].key).fetch()
 
 
-            # fetch room name
-            room_name = home[0].name
+			# fetch room name
+			room_name = home[0].name
 
-            # for person in people_in_home:
-            #   logging.info(person.name)
+			# for person in people_in_home:
+			#   logging.info(person.name)
 
-            return_data = {'room_name': room_name, 'bills': bills, 'chores': chores, 'checked_in' : checked_in, 'checked_out' : checked_out, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies, 'person': person}
-            return return_data
+			return_data = {'room_name': room_name, 'bills': bills, 'chores': chores, 'checked_in' : checked_in, 'checked_out' : checked_out, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies, 'person': person}
+			return return_data
 
 
 #Currently Unused
 def dndEnabled(self, enabler):
-    home = Home.query().filter(Home.key == enabler.home_key).fetch()
-    for id in home[0].occupants:
-        people_in_home.append(Person.query().filter(id == Person.user_id).fetch()[0])
-    for person in people_in_home:
-        if not person.user_id == enabler.user_id:
-            email_content = "Dear " + person.name +",\n" + enabler.name + " has turned on do not disturb for your room. Enter with caution. Or better yet, not at all. ;)\nSincerely,\nThe Roomates Developer Team"
-            # Import smtplib for the actual sending function
-            sendEmail(person.user_id, enabler.email, 'Do Not Disturb Enabled', email_content)
+	home = Home.query().filter(Home.key == enabler.home_key).fetch()
+	for id in home[0].occupants:
+		people_in_home.append(Person.query().filter(id == Person.user_id).fetch()[0])
+	for person in people_in_home:
+		if not person.user_id == enabler.user_id:
+			email_content = "Dear " + person.name +",\n" + enabler.name + " has turned on do not disturb for your room. Enter with caution. Or better yet, not at all. ;)\nSincerely,\nThe Roomates Developer Team"
+			# Import smtplib for the actual sending function
+			sendEmail(person.user_id, enabler.email, 'Do Not Disturb Enabled', email_content)
 
 
 def sendEmail(self, to, email_sender, email_subject, message_content):
-    message = mail.EmailMessage(sender=email_sender,
-                            subject=email_subject)
-    message.to = to
-    message.body = message_content
-    message.send()
+	message = mail.EmailMessage(sender=email_sender,
+							subject=email_subject)
+	message.to = to
+	message.body = message_content
+	message.send()
 
-def removeFromRoom(self, user, destroy_stickies):
+def removeFromRoom(self, user):
 	person = login.is_roommate_account_initialized(user)
-	home = Home.query().filter(Home.key == person.home_key).fetch()[0]
+	
+	if person:
+		home = Home.query().filter(Home.key == person.home_key).fetch()[0]
+		logging.info("Person: ")
+		logging.info(person)
+		logging.info("Home Occupants: ")
+		logging.info(home.occupants)
+	else:
+		logging.info("no person")
 	
 	#Removes person from record of Home
 	if person.user_id in home.occupants:
 		home.occupants.remove(person.user_id)
+		logging.info("Home occupants: ")
+		logging.info(home.occupants)
+		chores = Chore.query().filter(Chore.home_key == home.key)
+		bills = Bills.query().filter(Bills.home_key == home.key)
+		if len(home.occupants) == 0:
+			
+			for c in chores:
+				c.key.delete()
+			
+			for b in bills:
+				b.key.delete()
+			home.key.delete()
+		else: #BILLS AND CHORES NOT YET FUNCTIONAL, WILL THROW FATAL ERROR
+			# for c in chores:
+			# 	c.workers_names.remove(person)
 
-	#Resets person's values to default
-	person.home_key = None
-	person.location = False
-	person.do_not_disturb = False
-
-	if destroy_stickies:
+			# for b in bills:
+			# 	if b.payer_name == person:
+			# 		b.key.delete()
+			home.put()
 		#Find stickies associated with person
 		stickies = Sticky.query().filter(Sticky.author == person.user_id)
+		for note in stickies:
+			note.key.delete()
+		#Updates person and home entries
+		person.key.delete()
 
-	for note in stickies:
-		if note.home_key == home.key: #Only removes notes if in the home the user is currently leaving
-			Sticky.delete(note.key)
 
-	#Updates person and home entries
-	person.put()
-	home.put()
+
+
+
+
+
 
 
 
