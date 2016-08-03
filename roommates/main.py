@@ -43,10 +43,20 @@ import time
 #import urllib2
 import webapp2
 
+from oauth2client.contrib.appengine import OAuth2Decorator
+from googleapiclient.discovery import build
 
 
 # Initialize Jinja Environment
 env = jinja2.Environment(loader= jinja2.FileSystemLoader('templates'))
+
+decorator = OAuth2Decorator(
+	client_id='270567588357-nnleha1dmgvgr7jatb1du51ruvqn4mou.apps.googleusercontent.com',
+	client_secret='cAn4N7YIjckbjRaHWNqp1OEZ',
+	scope='https://www.googleapis.com/auth/calendar')
+
+service = build('calendar', 'v3')
+
 
 # Main Handler that either shows the login page, the create an account page, or the dashboard
 class MainHandler(webapp2.RequestHandler):
@@ -171,29 +181,6 @@ class JoinHomeHandler(webapp2.RequestHandler):
 
 
 		## TODO: redirect to create a calendar
-		
-
-
-
-
-class CreateCalendarHandler(webapp2.RequestHandler):
-	def get(self):
-		# Get current google account that is signed in
-		user = users.get_current_user()
-		# Check if there is a user signed in
-		if user:
-			person = login.is_roommate_account_initialized(user)
-			if person:
-				# Display Calendar
-				None
-#                cals = my_calendar.get_calender_list()
-#                data = {"cals": cals}
-#                render.render_page_with_data(self, 'createCalendar.html', 'Create a Schedule', data)
-			else:
-			   helpers.redirect(self, '/',0)
-		# If there is no user, prompt client to login
-		else:
-			helpers.redirect(self, '/',0)
 
 
 
@@ -492,6 +479,27 @@ class LeaveRoomHandler(webapp2.RequestHandler):
 			helpers.redirect(self, '/', 0)
 		
 
+class CreateCalendarHandler(webapp2.RequestHandler):
+	@decorator.oauth_required
+	def get(self):
+		# Get current google account that is signed in
+		user = users.get_current_user()
+		# Check if there is a user signed in
+		if user:
+			person = login.is_roommate_account_initialized(user)
+			if person:
+				# Get the authorized Http object created by the decorator.
+				http = decorator.http()
+				# Call the service using the authorized Http object.
+				request = service.events().list(calendarId='primary')
+				response = request.execute(http=http)
+			else:
+			   helpers.redirect(self, '/',0)
+		# If there is no user, prompt client to login
+		else:
+			helpers.redirect(self, '/',0)
+
+
 app = webapp2.WSGIApplication([
 
 	('/', MainHandler),
@@ -512,6 +520,7 @@ app = webapp2.WSGIApplication([
 	('/complete_sticky', ToggleStickyCompletedHandler),
 	('/complete_chore', CompleteChoreHandler),
 	('/leaveRoom', LeaveRoomHandler),
-	('/assign_bills',AssignBillHandler)
+	('/assign_bills',AssignBillHandler),
+	(decorator.callback_path, decorator.callback_handler()),
 
 ], debug=True)
