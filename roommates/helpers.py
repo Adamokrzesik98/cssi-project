@@ -10,8 +10,14 @@ from google.appengine.api import app_identity
 from google.appengine.api import mail
 import time
 import logging
+import hashlib
 
 
+
+
+def hashPass(password):
+    m = hashlib.sha256(password).hexdigest()
+    return m
 
 # redirect current page to address
 def redirect(self, address, wait_time):

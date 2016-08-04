@@ -58,6 +58,11 @@ decorator = OAuth2Decorator(
 service = build('calendar', 'v3')
 
 
+
+class TestHandler(webapp2.RequestHandler):
+	def get(self):
+		helpers.hashPass("a56138")
+
 # Main Handler that either shows the login page, the create an account page, or the dashboard
 class MainHandler(webapp2.RequestHandler):
 	def get(self):
@@ -118,7 +123,7 @@ class CreateHomeHandler(webapp2.RequestHandler): #Change to redirect for /new_jo
 			data = {'error' : 'Error: Passwords do not match'}
 			render.render_page_with_data_no_header(self, 'newJoinHome.html', 'Join a Room', data)
 		else:
-			password = self.request.get('password_b')
+			password = helpers.hashPass(self.request.get('password_b'))
 
 			new_home = Home(name= home_name, password = password, occupants = [user.user_id()])
 			person.home_key = new_home.put()
@@ -162,7 +167,7 @@ class JoinHomeHandler(webapp2.RequestHandler):
 
 		#retrieve data from form
 		home_name = self.request.get('home_name')
-		password = self.request.get('password')
+		password = helpers.hashPass(self.request.get('password'))
 		# Query for home object
 		potential_home = Home.query().filter(Home.name == home_name, Home.password == password).fetch()
 		if potential_home:
@@ -522,6 +527,7 @@ app = webapp2.WSGIApplication([
 	('/complete_chore', CompleteChoreHandler),
 	('/leaveRoom', LeaveRoomHandler),
 	('/assign_bills',AssignBillHandler),
+	('/test', TestHandler),
 	(decorator.callback_path, decorator.callback_handler()),
 
 ], debug=True)
