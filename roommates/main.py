@@ -45,6 +45,7 @@ import webapp2
 
 from oauth2client.contrib.appengine import OAuth2Decorator
 from googleapiclient.discovery import build
+import datetime
 
 
 # Initialize Jinja Environment
@@ -496,11 +497,17 @@ class CreateCalendarHandler(webapp2.RequestHandler):
 				# Get the authorized Http object created by the decorator.
 				http = decorator.http()
 				# Call the service using the authorized Http object.
-				request = service.calendarList().get(calendarId='calendarId').execute()
-				response = request.execute(http=http)
-				self.response.write(response['summary'])
+				now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+				request = service.events().list(calendarId='primary', timeMin=now, maxResults=10, singleEvents=True, orderBy='startTime').execute()
+				events = eventsResult.get('items', [])
+
+				if not events:
+					self.repsonse.write('No upcoming events found.')
+				for event in events:
+					start = event['start'].get('dateTime', event['start'].get('date'))
+					self.response.write(start, event['summary'])
 			else:
-			   helpers.redirect(self, '/',0)
+				helpers.redirect(self, '/',0)
 		# If there is no user, prompt client to login
 		else:
 			helpers.redirect(self, '/',0)
