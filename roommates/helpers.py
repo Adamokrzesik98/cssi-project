@@ -11,12 +11,66 @@ from google.appengine.api import mail
 import time
 import logging
 import hashlib
+import json
 
 from oauth2client.service_account import ServiceAccountCredentials
 from httplib2 import Http
+import httplib2
 from googleapiclient.discovery import build
 
-def createNewCal(self):
+
+
+
+
+                
+# events_list = helpers.updateCalendarFromAnother(requestResults['calendarId'], 0)
+
+
+
+###DEAD CODE
+def updateCalendarFromAnother(self, userCalID, calToUpdateID):
+    service = build('calendar', 'v3')
+
+    user_decorator = OAuth2Decorator(
+        client_id='270567588357-nnleha1dmgvgr7jatb1du51ruvqn4mou.apps.googleusercontent.com',
+        client_secret='cAn4N7YIjckbjRaHWNqp1OEZ',
+        scope='https://www.googleapis.com/auth/calendar')
+    user_http = user_decorator.http()
+    # Call the service using the authorized Http object.
+    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+    requestResults = service.events().list(calendarId='primary', timeMin=now, singleEvents=True, orderBy='startTime').execute(http=http)
+    events_list = requestResults 
+    # scopes = ['https://www.googleapis.com/auth/calendar']
+    # credentials = ServiceAccountCredentials.from_json_keyfile_name('service_account.json', scopes=scopes)
+    # http_auth = credentials.authorize(Http())
+
+    # service.events().get(calendarID=userCalID)
+    # page_token = None
+    # events_list = []
+    # while True:
+    #     events = service.events().list(calendarId='primary', pageToken=page_token).execute()
+    #     for event in events['items']:
+    #         events_list.append(event['summary'])
+    #     page_token = events.get('nextPageToken')
+    #     if not page_token:
+    #         break
+    return events_list
+
+def addEventToCal(self, event, calID):
+    scopes = ['https://www.googleapis.com/auth/calendar']
+    credentials = ServiceAccountCredentials.from_json_keyfile_name('service_account.json', scopes=scopes)
+    http_auth = credentials.authorize(Http())
+
+    service = build('calendar', 'v3')
+
+        # httplib2.debuglevel = 4
+    # json_event = json.loads(event)
+    # created_event = service.events().insert(calendarId=calID, body=json_event).execute(http=http_auth)
+
+    service.events().insert(calendarId=calID, body=event).execute(http=http_auth)
+
+
+def createNewCal(self, home_name):
     service = build('calendar', 'v3')
 
     scopes = ['https://www.googleapis.com/auth/calendar']
@@ -25,8 +79,7 @@ def createNewCal(self):
     # delegated_credentials = credentials.create_delegated(person.email_address)
     # http_auth = delegated_credentials.authorize(httplib2.Http())
     calendar = {
-        'summary': "Home Name's Calendar",
-        'timeZone': 'America/Los_Angeles'
+        'summary': home_name + 's Calendar', 'timeZone': 'America/Los_Angeles'
     }
     new_calendar = service.calendars().insert(body=calendar).execute(http=http_auth)
     logging.info(new_calendar['id'])
@@ -84,10 +137,13 @@ def getDashData(self, person):
             # fetch room name
             room_name = home[0].name
 
+
+            calendar_id = home[0].calendar_id
+
             # for person in people_in_home:
             #   logging.info(person.name)
 
-            return_data = {'room_name': room_name, 'bills': bills, 'chores': chores, 'checked_in' : checked_in, 'checked_out' : checked_out, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies, 'person': person}
+            return_data = {'room_name': room_name, 'bills': bills, 'chores': chores, 'checked_in' : checked_in, 'checked_out' : checked_out, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies, 'person': person, 'calID' : calendar_id}
             return return_data
 
 

@@ -7,8 +7,9 @@ class Person(ndb.Model):
     name = ndb.StringProperty(required = True)
     phone_number = ndb.IntegerProperty(required = True)
     home_key = ndb.KeyProperty(kind = 'Home')
-#    calendar = #required
+    calendar_id = ndb.StringProperty()
     location = ndb.BooleanProperty(default=False) #True if in room; False if out of room
     do_not_disturb = ndb.BooleanProperty(default=False) #True if on; False if off
     color = ndb.StringProperty() # Format #RRGGBB
     email_address = ndb.StringProperty(required=True)
+    
