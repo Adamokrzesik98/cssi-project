@@ -251,16 +251,10 @@ class JoinHomeHandler(webapp2.RequestHandler):
 			http = decorator.http()
 			#Call the service using the authorized Http object.
 			now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-			page_token = None
-			while True:
-				events = service.events().list(calendarId='primary', pageToken=page_token).execute(http=http)
-				for event in events['items']:
-					if event:
-						helpers.addEventToCal(self, event, calID)
-				page_token = events.get('nextPageToken')
-				if not page_token:
-					break
-
+			requestResults = service.events().list(calendarId='primary', timeMin=now, singleEvents=True, orderBy='startTime').execute(http=http)
+			
+			for event in requestResults['items']:
+				helpers.addEventToCal(self, event, calID)
 
 
 
