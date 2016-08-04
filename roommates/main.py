@@ -196,6 +196,9 @@ class JoinHomeHandler(webapp2.RequestHandler):
 	#     # If there is no user, prompt client to login
 	#     else:
 	#         helpers.redirect(self, '/',0)
+	def get(self):
+		helpers.redirect(self, '/dashboard',1000)
+
 	@decorator.oauth_required
 	def post(self):
 		
