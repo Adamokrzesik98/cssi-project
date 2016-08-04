@@ -32,9 +32,11 @@
 									{% if sticky.completed == True %} 
 									<div class="sticky_completed_item">
 									{% else %}
+									<div class="worker_item" class="sticky_author">{{sticky.author}}</div>
 									<div class="sticky_item">
 									{% endif %}
-									{{sticky.title}} : {{sticky.content}} <br>Created on: {{sticky.time_created}}</div>
+									{{sticky.title}} : {{sticky.content}} 
+									<br>Created on: {{sticky.time_created}}</div>
 									<div class="dropdown_content">
 										<form action="/complete_sticky" method="post">
 											<input hidden name='sticky_title' value="{{ sticky.title }}">

@@ -245,12 +245,13 @@ class CreateStickyHandler(webapp2.RequestHandler):
 				important = False
 			# Retrieve person and home objects
 			person = login.is_roommate_account_initialized(user)
+			person_name = Person.query().filter(Person.user_id == person.user_id).fetch()[0].name
 			home = Home.query().filter(Home.key == person.home_key).fetch()
 			# Calculate expiration time
 			cur_time = time.time()
 			expir_time = cur_time + days*24*60*60 + hours*60*60
 			# Create and put new sticky
-			new_sticky = Sticky(title= title, content= content, important= important, author= person.user_id, home_key= person.home_key, expiration= expir_time)
+			new_sticky = Sticky(title= title, content= content, important= important, author= person_name, home_key= person.home_key, expiration= expir_time)
 			new_sticky.put()
 			render.render_page(self, 'stickyCreated.html', "Sticky Created")
 			helpers.redirect(self, '/dashboard', 1000)
@@ -411,6 +412,7 @@ class ToggleStickyCompletedHandler(webapp2.RequestHandler):
 			person = login.is_roommate_account_initialized(user)
 			sticky_title = self.request.get('sticky_title')
 			sticky_content = self.request.get('sticky_content')
+			sticky_author = self.request.get('sticky_author')
 			sticky = Sticky.query().filter(Sticky.content==sticky_content, Sticky.title==sticky_title).fetch()
 			sticky = sticky[0]
 			if sticky.completed:
