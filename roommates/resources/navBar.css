@@ -1,7 +1,7 @@
 #title{
 	position: fixed;
-	top: 5px;
-	left: 80px;
+	top: .7%;
+	left: 7.2%;
 	font-size: 50px;
 	color: #CAE9FF;
 	text-align: left;
@@ -19,9 +19,9 @@
 
 #navPic{
 	position: fixed;
-	top: 5px;
-	left: 10px;
-	width: 60px;
+	top: .9%;
+	left: 2.5%;
+	width: 4%;
 	height: auto;
 	display: block;
 	margin: auto;
@@ -35,7 +35,7 @@
 	padding: 0;
 	overflow: hidden;
 	position: fixed;
-	top: 20px;
+	top: 3%;
 	left: 35%;
 	width: 65%;
 	height: 45px;
