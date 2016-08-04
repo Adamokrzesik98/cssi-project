@@ -38,14 +38,16 @@ from google.appengine.api import app_identity
 import jinja2
 import os
 import time
-#import json        DELETE IF NOT USED
+import json
 #import urllib
 #import urllib2
 import webapp2
 
+from oauth2client.service_account import ServiceAccountCredentials
 from oauth2client.contrib.appengine import OAuth2Decorator
 from googleapiclient.discovery import build
 import datetime
+from httplib2 import Http
 
 
 # Initialize Jinja Environment
@@ -56,13 +58,19 @@ decorator = OAuth2Decorator(
 	client_secret='cAn4N7YIjckbjRaHWNqp1OEZ',
 	scope='https://www.googleapis.com/auth/calendar')
 
+
+
+
 service = build('calendar', 'v3')
 
 
 
 class TestHandler(webapp2.RequestHandler):
 	def get(self):
-		helpers.hashPass("a56138")
+		helpers.createNewCal(self)
+
+
+
 
 # Main Handler that either shows the login page, the create an account page, or the dashboard
 class MainHandler(webapp2.RequestHandler):
@@ -102,15 +110,18 @@ class CreateHomeHandler(webapp2.RequestHandler): #Change to redirect for /new_jo
 		# If there is no user, prompt client to login
 		else:
 			helpers.redirect(self, '/',0)
-
+	@decorator.oauth_required
 	def post(self):
 		#retrieve data from form
 
 		name=self.request.get('name_b')
 		phone_number = int(self.request.get('phone_number1_b') + self.request.get('phone_number2_b') + self.request.get('phone_number3_b'))
+		color = self.request.get('color')
 		#create new person object
 		user = users.get_current_user()
-		person = Person(name=name, phone_number = phone_number, user_id = user.user_id(), email_address = user.email())
+
+		person = Person(name=name, color=color, phone_number = phone_number, user_id = user.user_id(), email_address = user.email(), calendar_id=user.email())
+
 
 
 		home_name = self.request.get('home_name_b')
@@ -125,17 +136,49 @@ class CreateHomeHandler(webapp2.RequestHandler): #Change to redirect for /new_jo
 			render.render_page_with_data_no_header(self, 'newJoinHome.html', 'Join a Room', data)
 		else:
 			password = helpers.hashPass(self.request.get('password_b'))
+			
+			#Creates a calendar to be shared (on service account)
+			calID = helpers.createNewCal(self, home_name)
 
-			new_home = Home(name= home_name, password = password, occupants = [user.user_id()])
+			new_home = Home(name= home_name, password = password, calendar_id = calID, occupants = [user.user_id()])
+
+
 			person.home_key = new_home.put()
-
 			person.put()
+
+
+
+			#Share calendar with user
+			scopes = ['https://www.googleapis.com/auth/calendar']
+			credentials = ServiceAccountCredentials.from_json_keyfile_name('service_account.json', scopes=scopes)
+			http_auth = credentials.authorize(Http())
+			rule = {
+				'scope': {
+					'type': 'user',
+					'value': user.email()
+				},
+				'role': 'reader'
+			}
+
+			created_rule = service.acl().insert(calendarId=calID, body=rule).execute(http=http_auth)
+
+
+
+
+			logging.info(calID)
+
+			#Update new calendar with events of person who just joined
+			#Gets primary calendary ID
+			http = decorator.http()
+			#Call the service using the authorized Http object.
+			now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+			requestResults = service.events().list(calendarId='primary', timeMin=now, singleEvents=True, orderBy='startTime').execute(http=http)
+			
+			for event in requestResults['items']:
+				helpers.addEventToCal(self, event, calID)
+
 				#redirect to create a calendar
-			render.render_page(self, 'cal_load.html', "Creating calendar...")
 			helpers.redirect(self, '/dashboard',1000)
-
-
-
 
 
 
@@ -155,14 +198,23 @@ class JoinHomeHandler(webapp2.RequestHandler):
 	#     # If there is no user, prompt client to login
 	#     else:
 	#         helpers.redirect(self, '/',0)
+	def get(self):
+		helpers.redirect(self, '/dashboard',1000)
 
+	@decorator.oauth_required
 	def post(self):
 		
 		name = self.request.get('name')
 		phone_number = int(self.request.get('phone_number1') + self.request.get('phone_number2') + self.request.get('phone_number3'))
 		#create new person object
 		user = users.get_current_user()
-		person = Person(name=name, phone_number = phone_number, user_id = user.user_id(), email_address = user.email())
+
+
+		color = self.request.get('color')
+		person = Person(name=name, color=color, phone_number = phone_number, user_id = user.user_id(), email_address = user.email(), calendar_id=user.email())
+
+
+
 
 
 
@@ -177,6 +229,51 @@ class JoinHomeHandler(webapp2.RequestHandler):
 			home_key = potential_home[0].put()
 			person.put()
 			person.home_key = home_key
+
+			#Share Calendar
+			calID = potential_home[0].calendar_id
+
+			#Share calendar with user
+			scopes = ['https://www.googleapis.com/auth/calendar']
+			credentials = ServiceAccountCredentials.from_json_keyfile_name('service_account.json', scopes=scopes)
+			http_auth = credentials.authorize(Http())
+			rule = {
+				'scope': {
+					'type': 'user',
+					'value': user.email()
+				},
+				'role': 'reader'
+			}
+
+			created_rule = service.acl().insert(calendarId=calID, body=rule).execute(http=http_auth)
+
+
+
+			logging.info(calID)
+
+			#Update new calendar with events of person who just joined
+			#Gets primary calendary ID
+			http = decorator.http()
+			#Call the service using the authorized Http object.
+			now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+			requestResults = service.events().list(calendarId='primary', timeMin=now, singleEvents=True, orderBy='startTime').execute(http=http)
+			
+			for event in requestResults['items']:
+				helpers.addEventToCal(self, event, calID)
+
+
+
+
+			# requestResults = service.events().list(calendarId='primary', timeMin=now, singleEvents=True, orderBy='startTime').execute(http=http)
+			
+			# for event in requestResults['items']:
+			# 	helpers.addEventToCal(self, event, calID)
+
+			#DONE WITH PASTED CODE
+
+
+
+
 			person.put()
 			data = {'home_name': home_name}
 			render.render_page_with_data(self, 'successfullyJoinedHome.html', 'Successfully Joined Home', data)
@@ -483,12 +580,12 @@ class LeaveRoomHandler(webapp2.RequestHandler):
 				logging.info("No Exception Thrown")
 			except AttributeError:
 				logging.info("AttributeError thrown")
-			helpers.redirect(self, '/newJoinHome', 0)
+			helpers.redirect(self, '/newJoinHome', 1000)
 		else:
 			helpers.redirect(self, '/', 0)
 		
 
-class CreateCalendarHandler(webapp2.RequestHandler):
+class ShareCalendarHandler(webapp2.RequestHandler):
 	@decorator.oauth_required
 	def get(self):
 		# Get current google account that is signed in
@@ -501,20 +598,13 @@ class CreateCalendarHandler(webapp2.RequestHandler):
 				http = decorator.http()
 				# Call the service using the authorized Http object.
 				now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-				request = service.events().list(calendarId='primary', timeMin=now, maxResults=10, singleEvents=True, orderBy='startTime').execute()
-				events = eventsResult.get('items', [])
+				requestResults = service.events().list(calendarId='primary', timeMin=now, maxResults=10, singleEvents=True, orderBy='startTime').execute(http=http)
 
-				if not events:
-					self.repsonse.write('No upcoming events found.')
-				for event in events:
-					start = event['start'].get('dateTime', event['start'].get('date'))
-					self.response.write(start, event['summary'])
 			else:
 				helpers.redirect(self, '/',0)
 		# If there is no user, prompt client to login
 		else:
 			helpers.redirect(self, '/',0)
-
 
 app = webapp2.WSGIApplication([
 
@@ -527,7 +617,7 @@ app = webapp2.WSGIApplication([
 	# ('/create_account', CreateAccountHandler),
 	('/create_home', CreateHomeHandler),
 	('/join_home', JoinHomeHandler),
-	('/create_calendar', CreateCalendarHandler),
+	('/create_calendar', ShareCalendarHandler),
 	('/developer', DeveloperHandler),
 	('/settings', SettingsHandler),
 	('/leaveRoom', LeaveRoomHandler),
