@@ -116,9 +116,10 @@ class CreateHomeHandler(webapp2.RequestHandler): #Change to redirect for /new_jo
 
 		name=self.request.get('name_b')
 		phone_number = int(self.request.get('phone_number1_b') + self.request.get('phone_number2_b') + self.request.get('phone_number3_b'))
+		color = self.request.get('color')
 		#create new person object
 		user = users.get_current_user()
-		person = Person(name=name, phone_number = phone_number, user_id = user.user_id(), email_address = user.email())
+		person = Person(name=name, color= color, phone_number = phone_number, user_id = user.user_id(), email_address = user.email())
 
 
 		home_name = self.request.get('home_name_b')
@@ -137,16 +138,13 @@ class CreateHomeHandler(webapp2.RequestHandler): #Change to redirect for /new_jo
 			#Creates a calendar to be shared (on service account)
 			calID = helpers.createNewCal(self)
 
-			new_home = Home(name= home_name, password = password, calender_id = calID, occupants = [user.user_id()])
+			new_home = Home(name= home_name, password = password, calendar_id = calID, occupants = [user.user_id()])
 
 
 			person.home_key = new_home.put()
 			person.put()
 				#redirect to create a calendar
 			helpers.redirect(self, '/dashboard',1000)
-
-
-
 
 
 
@@ -173,7 +171,8 @@ class JoinHomeHandler(webapp2.RequestHandler):
 		phone_number = int(self.request.get('phone_number1') + self.request.get('phone_number2') + self.request.get('phone_number3'))
 		#create new person object
 		user = users.get_current_user()
-		person = Person(name=name, phone_number = phone_number, user_id = user.user_id(), email_address = user.email())
+		color = self.request.get('color')
+		person = Person(color=color, name=name, phone_number = phone_number, user_id = user.user_id(), email_address = user.email())
 
 
 
