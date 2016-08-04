@@ -139,6 +139,7 @@
 }
 .dropdown{
 	margin-bottom: 5%;
+	width: 100%;
 }
 .dropdown form input[type=submit]{
 	position: relative;
