@@ -493,7 +493,7 @@ class LeaveRoomHandler(webapp2.RequestHandler):
 				logging.info("No Exception Thrown")
 			except AttributeError:
 				logging.info("AttributeError thrown")
-			helpers.redirect(self, '/newJoinHome', 0)
+			helpers.redirect(self, '/newJoinHome', 1000)
 		else:
 			helpers.redirect(self, '/', 0)
 		
