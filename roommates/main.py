@@ -38,14 +38,16 @@ from google.appengine.api import app_identity
 import jinja2
 import os
 import time
-#import json        DELETE IF NOT USED
+import json
 #import urllib
 #import urllib2
 import webapp2
 
+from oauth2client.service_account import ServiceAccountCredentials
 from oauth2client.contrib.appengine import OAuth2Decorator
 from googleapiclient.discovery import build
 import datetime
+from httplib2 import Http
 
 
 # Initialize Jinja Environment
@@ -56,13 +58,19 @@ decorator = OAuth2Decorator(
 	client_secret='cAn4N7YIjckbjRaHWNqp1OEZ',
 	scope='https://www.googleapis.com/auth/calendar')
 
+
+
+
 service = build('calendar', 'v3')
 
 
 
 class TestHandler(webapp2.RequestHandler):
 	def get(self):
-		helpers.hashPass("a56138")
+		helpers.createNewCal(self)
+
+
+
 
 # Main Handler that either shows the login page, the create an account page, or the dashboard
 class MainHandler(webapp2.RequestHandler):
@@ -125,10 +133,14 @@ class CreateHomeHandler(webapp2.RequestHandler): #Change to redirect for /new_jo
 			render.render_page_with_data_no_header(self, 'newJoinHome.html', 'Join a Room', data)
 		else:
 			password = helpers.hashPass(self.request.get('password_b'))
+			
+			#Creates a calendar to be shared (on service account)
+			calID = helpers.createNewCal(self)
 
-			new_home = Home(name= home_name, password = password, occupants = [user.user_id()])
+			new_home = Home(name= home_name, password = password, calender_id = calID, occupants = [user.user_id()])
+
+
 			person.home_key = new_home.put()
-
 			person.put()
 				#redirect to create a calendar
 			helpers.redirect(self, '/dashboard',1000)
@@ -485,7 +497,7 @@ class LeaveRoomHandler(webapp2.RequestHandler):
 			helpers.redirect(self, '/', 0)
 		
 
-class CreateCalendarHandler(webapp2.RequestHandler):
+class ShareCalendarHandler(webapp2.RequestHandler):
 	@decorator.oauth_required
 	def get(self):
 		# Get current google account that is signed in
@@ -498,20 +510,19 @@ class CreateCalendarHandler(webapp2.RequestHandler):
 				http = decorator.http()
 				# Call the service using the authorized Http object.
 				now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-				request = service.events().list(calendarId='primary', timeMin=now, maxResults=10, singleEvents=True, orderBy='startTime').execute()
-				events = eventsResult.get('items', [])
+				requestResults = service.events().list(calendarId='primary', timeMin=now, maxResults=10, singleEvents=True, orderBy='startTime').execute(http=http)
+				events = requestResults.get('items', [])
 
 				if not events:
-					self.repsonse.write('No upcoming events found.')
+					self.response.write('No upcoming events found.')
 				for event in events:
 					start = event['start'].get('dateTime', event['start'].get('date'))
-					self.response.write(start, event['summary'])
+					self.response.write(start + " " +  event['summary'])
 			else:
 				helpers.redirect(self, '/',0)
 		# If there is no user, prompt client to login
 		else:
 			helpers.redirect(self, '/',0)
-
 
 app = webapp2.WSGIApplication([
 
@@ -524,7 +535,7 @@ app = webapp2.WSGIApplication([
 	# ('/create_account', CreateAccountHandler),
 	('/create_home', CreateHomeHandler),
 	('/join_home', JoinHomeHandler),
-	('/create_calendar', CreateCalendarHandler),
+	('/create_calendar', ShareCalendarHandler),
 	('/developer', DeveloperHandler),
 	('/settings', SettingsHandler),
 	('/leaveRoom', LeaveRoomHandler),

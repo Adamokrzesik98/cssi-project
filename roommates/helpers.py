@@ -12,8 +12,25 @@ import time
 import logging
 import hashlib
 
+from oauth2client.service_account import ServiceAccountCredentials
+from httplib2 import Http
+from googleapiclient.discovery import build
 
+def createNewCal(self):
+    service = build('calendar', 'v3')
 
+    scopes = ['https://www.googleapis.com/auth/calendar']
+    credentials = ServiceAccountCredentials.from_json_keyfile_name('service_account.json', scopes=scopes)
+    http_auth = credentials.authorize(Http())
+    # delegated_credentials = credentials.create_delegated(person.email_address)
+    # http_auth = delegated_credentials.authorize(httplib2.Http())
+    calendar = {
+        'summary': "Home Name's Calendar",
+        'timeZone': 'America/Los_Angeles'
+    }
+    new_calendar = service.calendars().insert(body=calendar).execute(http=http_auth)
+    logging.info(new_calendar['id'])
+    return new_calendar['id']
 
 def hashPass(password):
     m = hashlib.sha256(password).hexdigest()
