@@ -111,12 +111,13 @@
 }
 .sticky_item{
 	display: inline-block;
+	float: right;
 	color: #CAE9FF;
 	border: 2px;
 	border-radius: 25px;
 	padding: 5px;
 	text-align: center;
-	width: 100%;
+	width: 70%;
 	margin: auto;
 	background-color: #4A8FE7;
 }
@@ -128,12 +129,17 @@
 	border-radius: 25px;
 	padding: 5px;
 	text-align: center;
-	width: 100%;
+	width: 70%;
 	margin: auto;
 	background-color: #4A8FE7;
 }
+
+.sticky_author {
+	float:left;
+}
 .dropdown{
 	margin-bottom: 5%;
+	width: 100%;
 }
 .dropdown form input[type=submit]{
 	position: relative;

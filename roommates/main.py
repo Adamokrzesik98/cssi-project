@@ -116,9 +116,12 @@ class CreateHomeHandler(webapp2.RequestHandler): #Change to redirect for /new_jo
 
 		name=self.request.get('name_b')
 		phone_number = int(self.request.get('phone_number1_b') + self.request.get('phone_number2_b') + self.request.get('phone_number3_b'))
+		color = self.request.get('color')
 		#create new person object
 		user = users.get_current_user()
-		person = Person(name=name, phone_number = phone_number, user_id = user.user_id(), email_address = user.email(), calendar_id=user.email())
+
+		person = Person(name=name, color=color, phone_number = phone_number, user_id = user.user_id(), email_address = user.email(), calendar_id=user.email())
+
 
 
 		home_name = self.request.get('home_name_b')
@@ -178,9 +181,6 @@ class CreateHomeHandler(webapp2.RequestHandler): #Change to redirect for /new_jo
 
 
 
-
-
-
 class JoinHomeHandler(webapp2.RequestHandler):
 	# def get(self): #NOT NEEDED ANYMORE, ONLY POST
 	#     # Get current google account that is signed in
@@ -205,7 +205,11 @@ class JoinHomeHandler(webapp2.RequestHandler):
 		user = users.get_current_user()
 
 
-		person = Person(name=name, phone_number = phone_number, user_id = user.user_id(), email_address = user.email(), calendar_id=user.email())
+		color = self.request.get('color')
+		person = Person(name=name, color=color, phone_number = phone_number, user_id = user.user_id(), email_address = user.email(), calendar_id=user.email())
+
+
+
 
 
 
@@ -329,12 +333,13 @@ class CreateStickyHandler(webapp2.RequestHandler):
 				important = False
 			# Retrieve person and home objects
 			person = login.is_roommate_account_initialized(user)
+			person_name = Person.query().filter(Person.user_id == person.user_id).fetch()[0].name
 			home = Home.query().filter(Home.key == person.home_key).fetch()
 			# Calculate expiration time
 			cur_time = time.time()
 			expir_time = cur_time + days*24*60*60 + hours*60*60
 			# Create and put new sticky
-			new_sticky = Sticky(title= title, content= content, important= important, author= person.user_id, home_key= person.home_key, expiration= expir_time)
+			new_sticky = Sticky(title= title, content= content, important= important, author= person_name, home_key= person.home_key, expiration= expir_time)
 			new_sticky.put()
 			render.render_page(self, 'stickyCreated.html', "Sticky Created")
 			helpers.redirect(self, '/dashboard', 1000)
@@ -495,6 +500,7 @@ class ToggleStickyCompletedHandler(webapp2.RequestHandler):
 			person = login.is_roommate_account_initialized(user)
 			sticky_title = self.request.get('sticky_title')
 			sticky_content = self.request.get('sticky_content')
+			sticky_author = self.request.get('sticky_author')
 			sticky = Sticky.query().filter(Sticky.content==sticky_content, Sticky.title==sticky_title).fetch()
 			sticky = sticky[0]
 			if sticky.completed:

@@ -27,14 +27,18 @@
 			<div id="sticky_frame">
 						<h3 id="sticky_title">Stickies</h3>
 						{% if home_stickies: %}
+							<div class="name_box">
 							{% for sticky in home_stickies: %}
 								<div class="dropdown">
 									{% if sticky.completed == True %} 
-									<div class="sticky_completed_item">
+									<div class="worker_item">{{sticky.author}}</div>
+									<div class="chore_completed_item">
 									{% else %}
-									<div class="sticky_item">
+									<div class="worker_item">{{sticky.author}}</div>
+									<div class="chore_item">
 									{% endif %}
-									{{sticky.title}} : {{sticky.content}} <br>Created on: {{sticky.time_created}}</div>
+									{{sticky.title}} : {{sticky.content}} 
+									<br>Created on: {{sticky.time_created}}</div>
 									<div class="dropdown_content">
 										<form action="/complete_sticky" method="post">
 											<input hidden name='sticky_title' value="{{ sticky.title }}">
@@ -50,7 +54,9 @@
 										{% endif %}
 									</div>
 								</div>
+								<div style="width:100%; height: 2px; float: left">  &nbsp </div>
 							{% endfor %}
+							</div>
 						{% else %}
 								<div class="sticky_item">No Stickies</div>
 						{% endif %}

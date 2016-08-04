@@ -10,6 +10,6 @@ class Person(ndb.Model):
     calendar_id = ndb.StringProperty()
     location = ndb.BooleanProperty(default=False) #True if in room; False if out of room
     do_not_disturb = ndb.BooleanProperty(default=False) #True if on; False if off
-    color = ndb.StringProperty() # Format #RRGGBB
+
+    color = ndb.StringProperty(required=True)
     email_address = ndb.StringProperty(required=True)
-    
