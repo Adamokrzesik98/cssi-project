@@ -131,6 +131,7 @@ class CreateHomeHandler(webapp2.RequestHandler): #Change to redirect for /new_jo
 
 			person.put()
 				#redirect to create a calendar
+			render.render_page(self, 'cal_load.html', "Creating calendar...")
 			helpers.redirect(self, '/dashboard',1000)
 
 
