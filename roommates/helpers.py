@@ -20,9 +20,6 @@ from googleapiclient.discovery import build
 
 
 
-
-
-
                 
 # events_list = helpers.updateCalendarFromAnother(requestResults['calendarId'], 0)
 
@@ -57,12 +54,12 @@ def updateCalendarFromAnother(self, userCalID, calToUpdateID):
     #         break
     return events_list
 
-def addEventToCal(self, event, calID):
-    scopes = ['https://www.googleapis.com/auth/calendar']
-    credentials = ServiceAccountCredentials.from_json_keyfile_name('service_account.json', scopes=scopes)
-    http_auth = credentials.authorize(Http())
+def addEventToCal(self, event, calID, http_auth, service):
+    # scopes = ['https://www.googleapis.com/auth/calendar']
+    # credentials = ServiceAccountCredentials.from_json_keyfile_name('service_account.json', scopes=scopes)
+    # http_auth = credentials.authorize(Http())
 
-    service = build('calendar', 'v3')
+    # service = build('calendar', 'v3')
 
         # httplib2.debuglevel = 4
     # json_event = json.loads(event)
@@ -138,11 +135,12 @@ def getDashData(self, person):
 
 			# fetch room name
 			room_name = home[0].name
+			calendarID = home[0].calendar_id
 
 			# for person in people_in_home:
 			#   logging.info(person.name)
 
-			return_data = {'room_name': room_name, 'bills': bills, 'chores': chores, 'checked_in' : checked_in, 'checked_out' : checked_out, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies, 'person': person}
+			return_data = {'room_name': room_name, 'calID':calendarID, 'bills': bills, 'chores': chores, 'checked_in' : checked_in, 'checked_out' : checked_out, 'has_dnd_on' : has_dnd_on ,'home_stickies' : home_stickies, 'person': person}
 			return return_data
 
 

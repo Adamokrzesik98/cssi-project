@@ -172,10 +172,16 @@ class CreateHomeHandler(webapp2.RequestHandler): #Change to redirect for /new_jo
 			now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
 			requestResults = service.events().list(calendarId='primary', timeMin=now, singleEvents=True, orderBy='startTime').execute(http=http)
 			
-			for event in requestResults['items']:
-				helpers.addEventToCal(self, event, calID)
 
-				#redirect to create a calendar
+
+			# self.response.write(requestResults['items'])
+
+
+			for event in requestResults['items']:
+			 	logging.info(event)
+			 	helpers.addEventToCal(self, event, calID, http_auth, service)
+
+			 	#redirect to create a calendar
 			helpers.redirect(self, '/dashboard',1000)
 
 
@@ -257,7 +263,8 @@ class JoinHomeHandler(webapp2.RequestHandler):
 			requestResults = service.events().list(calendarId='primary', timeMin=now, singleEvents=True, orderBy='startTime').execute(http=http)
 			
 			for event in requestResults['items']:
-				helpers.addEventToCal(self, event, calID)
+				logging.info(event)
+				helpers.addEventToCal(self, event, calID, http_auth, service)
 
 
 
